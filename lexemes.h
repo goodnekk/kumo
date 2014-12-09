@@ -6,27 +6,39 @@ using namespace std;
 namespace lexemes{
 
     class node {
-        virtual void eval();
+    public:
+        node(){};
+        virtual void eval(){};
     };
 
     //terminals
     class number: public node {
-            int value;
-            number(string characters){
-                //convert to int
-                //stringstream convert(characters);
-                //convert >> value;
-            }
+    public:
+        string value;
+        number(string characters){
+            value = characters;
+            //convert to int
+            //stringstream convert(characters);
+            //convert >> value;
+        };
+        void eval(){cout<<"LD 2 "<<value<<endl;};
     };
 
     //nonterminals
     class addition: public node {
-        node l;
-        node r;
-
-        addition(node left, node right){
+    public:
+        node * r;
+        node * l;
+        addition(node * left, node * right){
             l = left;
             r = right;
-        }
+        };
+        void eval(){
+            r->eval();
+            cout<<"MOV 2 0"<<endl;
+            l->eval();
+            cout<<"MOV 2 1"<<endl;
+            cout<<"ADD 0 1 2"<<endl;
+        };
     };
 }

@@ -2,10 +2,21 @@
 
 void parser::parse(vector<token> list){
     tokens = list;
-    if(add(0) == true)
+    lexemes::node * a = add(0);
+    if(a) {
         cout<<"parsed"<<endl;
-    else
+        a->eval();
+    }
+    else {
         cout<<"parser failed"<<endl;
+    }
+
+}
+
+lexemes::node * parser::test(){
+    lexemes::node * a;
+    a = new lexemes::node();
+    return NULL;
 }
 
 token parser::getToken(int n){
@@ -15,28 +26,28 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
-bool parser::add(int n){
-    bool a = number(n);
+lexemes::node * parser::add(int n){
+    lexemes::node * a = number(n);
     bool b = plus(n+1);
-    if (a==true && b==true){
-        bool c = add(n+2);
-        if (c==true) {
-            return true;
+    if (a && b){
+        lexemes::node * c = add(n+2);
+        if (c) {
+            return new lexemes::addition(a,c);
         }
 
-        c = number(n+2);
-        if (c==true){
-            return true;
+        lexemes::node * d = number(n+2);
+        if (d){
+            return new lexemes::addition(a,d);
         }
     }
-    return false;
+    return NULL;
 }
 
-bool parser::number(int n){
+lexemes::node * parser::number(int n){
     if (getToken(n).type == tokentypes::NUMBER) {
-        return true;
+        return new lexemes::number(getToken(n).tokenstring);
     }
-    return false;
+    return NULL;
 }
 
 bool parser::plus(int n){

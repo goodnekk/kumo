@@ -14,11 +14,13 @@ class parser{
         //recursive analysis
         //non terminals
         token getToken(int n);
-        bool add(int n);
+        lexemes::node * add(int n);
 
         //terminals
-        bool number(int n);
+        lexemes::node * number(int n);
         bool plus(int n);
+
+        lexemes::node * test();
 
     public:
         void parse(vector<token> list);
