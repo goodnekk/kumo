@@ -1,9 +1,8 @@
 #include "parser.h"
-#include <iostream>
 
 void parser::parse(vector<token> list){
     tokens = list;
-    if(add(0))
+    if(add(0) == true)
         cout<<"parsed"<<endl;
     else
         cout<<"parser failed"<<endl;
@@ -19,14 +18,14 @@ token parser::getToken(int n){
 bool parser::add(int n){
     bool a = number(n);
     bool b = plus(n+1);
-    if (a && b){
+    if (a==true && b==true){
         bool c = add(n+2);
-        if (c) {
+        if (c==true) {
             return true;
         }
 
         c = number(n+2);
-        if (c){
+        if (c==true){
             return true;
         }
     }
@@ -42,7 +41,6 @@ bool parser::number(int n){
 
 bool parser::plus(int n){
     if (getToken(n).type == tokentypes::OPERATOR) {
-        cout<<getToken(n).tokenstring;
         if(getToken(n).tokenstring == "+"){
             return true;
         }

@@ -1,6 +1,9 @@
 #pragma once
 #include "token.h"
 #include "tokentypes.h"
+#include "lexemes.h"
+
+#include <iostream>
 #include <vector>
 
 using namespace std;
