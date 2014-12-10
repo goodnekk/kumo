@@ -4,12 +4,12 @@
 
 #include "parser.h"
 
-void parser::parse(vector<token> list){
+lexemes::node * parser::parse(vector<token> list){
     tokens = list;
     lexemes::node * a = add(0);
     if(a) {
         cout<<"parsed"<<endl;
-        a->eval(2);
+        return a;
     }
     else {
         cout<<"parser failed"<<endl;

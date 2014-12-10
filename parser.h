@@ -23,5 +23,5 @@ class parser{
         lexemes::node * test();
 
     public:
-        void parse(vector<token> list);
+        lexemes::node * parse(vector<token> list);
 };

@@ -1,3 +1,6 @@
+//author: Marcel Goethals
+//stack-based virtual machine loads a vector of ints and performs
+
 #include "vm.h"
 #include "instructions.h"
 void vm::load(vector<int> prg){

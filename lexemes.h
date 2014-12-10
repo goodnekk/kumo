@@ -1,6 +1,10 @@
 #pragma once
 #include <string>
+#include <sstream>
+
+#include <vector>
 #include <iostream>
+#include "instructions.h"
 
 using namespace std;
 namespace lexemes{
@@ -8,20 +12,22 @@ namespace lexemes{
     class node {
     public:
         node(){};
-        virtual void eval(int reg){};
+        virtual void eval(vector<int> * p){};
     };
 
     //terminals
     class number: public node {
     public:
-        string value;
+        int value;
         number(string characters){
-            value = characters;
             //convert to int
-            //stringstream convert(characters);
-            //convert >> value;
+            istringstream convert(characters);
+            convert >> value;
         };
-        void eval(int reg){cout<<"LD "<<reg<<" "<<value<<endl;};
+        void eval(vector<int> * p){
+            p->push_back(instructions::PUSH_C);
+            p->push_back(value);
+        };
     };
 
     //nonterminals
@@ -33,10 +39,10 @@ namespace lexemes{
             l = left;
             r = right;
         };
-        void eval(int reg){
-            r->eval(0);
-            l->eval(1);
-            cout<<"ADD 0 1 "<<reg<<endl;
+        void eval(vector<int> * p){
+            r->eval(p);
+            l->eval(p);
+            p->push_back(instructions::ADD);
         };
     };
 }
