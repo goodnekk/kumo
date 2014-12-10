@@ -1,6 +1,6 @@
 objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/vm.o $(bin)/generator.o
 
-bin = bin
+bin = ../bin
 
 $(bin)/kumo: $(objects)
 	g++ $(objects) -o $(bin)/kumo
