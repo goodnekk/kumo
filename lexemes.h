@@ -8,7 +8,7 @@ namespace lexemes{
     class node {
     public:
         node(){};
-        virtual void eval(){};
+        virtual void eval(int reg){};
     };
 
     //terminals
@@ -21,7 +21,7 @@ namespace lexemes{
             //stringstream convert(characters);
             //convert >> value;
         };
-        void eval(){cout<<"LD 2 "<<value<<endl;};
+        void eval(int reg){cout<<"LD "<<reg<<" "<<value<<endl;};
     };
 
     //nonterminals
@@ -33,12 +33,10 @@ namespace lexemes{
             l = left;
             r = right;
         };
-        void eval(){
-            r->eval();
-            cout<<"MOV 2 0"<<endl;
-            l->eval();
-            cout<<"MOV 2 1"<<endl;
-            cout<<"ADD 0 1 2"<<endl;
+        void eval(int reg){
+            r->eval(0);
+            l->eval(1);
+            cout<<"ADD 0 1 "<<reg<<endl;
         };
     };
 }

@@ -1,4 +1,4 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/vm.o
 
 bin = bin
 
@@ -17,3 +17,6 @@ $(bin)/token.o: token.cpp
 
 $(bin)/parser.o: parser.cpp
 	g++ -c parser.cpp -o $(bin)/parser.o
+
+$(bin)/vm.o: vm.cpp
+	g++ -c vm.cpp -o $(bin)/vm.o

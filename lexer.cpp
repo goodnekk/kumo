@@ -1,8 +1,9 @@
 #include "lexer.h"
 #include "tokentypes.h"
 
-//use this instead of regex (gcc regex bugs)
+
 bool lexer::isLetter(string c){
+	//use this instead of regular expressions, it's faster and simpler and uses less code
 	const static string letters[52] = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 	for(int i=0; i<52; i++){
 		if (c==letters[i]){

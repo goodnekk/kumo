@@ -1,3 +1,7 @@
+//author: Marcel Goethals
+//Hand written parser, no lousy parser generators here.
+//takes a vector of tokens and builds a parse tree.
+
 #include "parser.h"
 
 void parser::parse(vector<token> list){
@@ -5,12 +9,11 @@ void parser::parse(vector<token> list){
     lexemes::node * a = add(0);
     if(a) {
         cout<<"parsed"<<endl;
-        a->eval();
+        a->eval(2);
     }
     else {
         cout<<"parser failed"<<endl;
     }
-
 }
 
 lexemes::node * parser::test(){
