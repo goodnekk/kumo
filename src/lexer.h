@@ -1,10 +1,11 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <vector>
 
 #include "token.h"
+#include "tokentypes.h"
+#include "log.h"
 
 using namespace std;
 

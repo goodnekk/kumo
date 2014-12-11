@@ -5,11 +5,7 @@
 #include "generator.h"
 
 vector<int> generator::generate(lexemes::node * a){
+    LOG_DEBUG("Generator: started");
     a->eval(&program);
     return program;
-}
-
-void generator::push(int code){
-    cout<<"code:"<<code<<endl;
-    program.push_back(code);
 }

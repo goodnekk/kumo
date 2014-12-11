@@ -5,21 +5,16 @@
 #include "parser.h"
 
 lexemes::node * parser::parse(vector<token> list){
+    LOG_DEBUG("Parser: Started");
     tokens = list;
     lexemes::node * a = add(0);
     if(a) {
-        cout<<"parsed"<<endl;
+        LOG_DEBUG("Parser: Correctly parsed");
         return a;
     }
     else {
-        cout<<"parser failed"<<endl;
+        LOG_ERROR("Parser: Parser failed, incomplete parse.");
     }
-}
-
-lexemes::node * parser::test(){
-    lexemes::node * a;
-    a = new lexemes::node();
-    return NULL;
 }
 
 token parser::getToken(int n){

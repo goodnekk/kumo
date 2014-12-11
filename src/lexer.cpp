@@ -1,6 +1,4 @@
 #include "lexer.h"
-#include "tokentypes.h"
-
 
 bool lexer::isLetter(string c){
 	//use this instead of regular expressions, it's faster and simpler and uses less code
@@ -64,7 +62,7 @@ void lexer::pushToken(const int type){
 }
 
 vector<token> lexer::getTokens(){
-	cout<<"lexed to: "<<tokens.size()<<" tokens"<<endl;
+	LOG_DEBUG("Lexed to: "<<tokens.size()<<" tokens");
 	for(int i=0; i<tokens.size(); i++){
 		tokens.at(i).print();
 	}
@@ -104,7 +102,8 @@ void lexer::analize(){
 			return;
 		}
 		else {
-			cout<<"Unknown character: "<<character<<endl;
+
+			LOG_ERROR("Lexer found unknown character: "<<character);
 			return;
 		}
 		analize();
@@ -157,7 +156,7 @@ void lexer::lex(string input){
 	pointer = 0;
 	character = "";
 
-	cout<<data<<endl;
+	LOG_DEBUG("Lexing: "<<data);
 	step();
 	analize();
 }

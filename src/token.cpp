@@ -7,5 +7,5 @@ token::token(int ty, string tok){
 }
 
 void token::print(){
-    cout<<tokentypes::names[type]<<"::"<<tokenstring<<endl;
+    LOG_DEBUG(tokentypes::names[type]<<"::"<<tokenstring);
 }

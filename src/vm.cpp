@@ -3,6 +3,7 @@
 
 #include "vm.h"
 #include "instructions.h"
+
 void vm::load(vector<int> prg){
     program = prg;
     programPoint = 0;
@@ -15,19 +16,19 @@ void vm::run(){
 
         switch(instruction){
             case instructions::PUSH_C:
-                cout<<"PUSH_C"<<endl;
+                LOG_DEBUG("PUSH_C");
                 push_stack(fetch());
                 break;
             case instructions::ADD:
-                cout<<"ADD"<<endl;
+                LOG_DEBUG("ADD");
 
                 push_stack(pop_stack()+pop_stack());
                 break;
             case instructions::PRINT:
-                cout<<"> "<<pop_stack()<<endl;
+                LOG(pop_stack());
                 break;
             default:
-                cout<<"unknown instruction"<<endl;
+                LOG_ERROR("VM: Unknown instruction: "<< instruction);
         }
     }
 }

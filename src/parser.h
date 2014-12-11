@@ -3,7 +3,7 @@
 #include "tokentypes.h"
 #include "lexemes.h"
 
-#include <iostream>
+#include "log.h"
 #include <vector>
 
 using namespace std;
@@ -19,8 +19,6 @@ class parser{
         //terminals
         lexemes::node * number(int n);
         bool plus(int n);
-
-        lexemes::node * test();
 
     public:
         lexemes::node * parse(vector<token> list);

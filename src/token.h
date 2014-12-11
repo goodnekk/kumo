@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <iostream>
+#include "log.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ class token{
 	public:
 		int type;
 		string tokenstring;
-		
+
 		token(int ty, string tok);
 		void print();
 };
