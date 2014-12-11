@@ -11,7 +11,8 @@ namespace lexemes{
 
     class node {
     public:
-        node(){};
+        int length;
+        node(){length = 1;};
         virtual void eval(vector<int> * p){};
     };
 
@@ -30,7 +31,34 @@ namespace lexemes{
         };
     };
 
+    class name: public node{
+    public:
+        string value;
+        name(string v){
+            value = v;
+        };
+    };
+
     //nonterminals
+    class call: public node{
+    public:
+        node * argument;
+        string name;
+
+        call(node * a, string n){
+            argument = a;
+            name = n;
+            if (a){
+                length = 3+a->length;
+            } else{
+                length = 3;
+            }
+        };
+        void eval(vector<int> * p){
+            
+        };
+    };
+
     class addition: public node {
     public:
         node * r;

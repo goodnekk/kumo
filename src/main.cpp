@@ -9,7 +9,7 @@ int main() {
 	generator g;
 	vm v;
 
-	l.lex("1+2+3"); //should be 6
+	l.lex("print()"); //should be 6
 	v.load(g.generate(p.parse(l.getTokens())));
 	v.run();
 
