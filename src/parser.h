@@ -20,10 +20,10 @@ class parser{
 
         lexemes::node * call(int n);
         lexemes::node * expression(int n);
-        //lexemes::node * add();
+        lexemes::node * add(int n);
 
         //terminals
-        //lexemes::node * number();
+        lexemes::node * number(int n);
 
 
         //high level compare functions

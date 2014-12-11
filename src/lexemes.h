@@ -21,6 +21,7 @@ namespace lexemes{
     public:
         int value;
         number(string characters){
+            length = 1;
             //convert to int
             istringstream convert(characters);
             convert >> value;
@@ -35,6 +36,7 @@ namespace lexemes{
     public:
         string value;
         name(string v){
+            length = 1;
             value = v;
         };
     };
@@ -55,7 +57,8 @@ namespace lexemes{
             }
         };
         void eval(vector<int> * p){
-            
+            argument->eval(p);
+            p->push_back(instructions::PRINT);
         };
     };
 
@@ -66,6 +69,7 @@ namespace lexemes{
         addition(node * left, node * right){
             l = left;
             r = right;
+            length = (l->length)+(r->length)+1;
         };
         void eval(vector<int> * p){
             r->eval(p);

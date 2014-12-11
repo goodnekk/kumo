@@ -49,7 +49,7 @@ lexemes::node * parser::call(int n){
             LOG_DEBUG("Parser: simple call ");
             return new lexemes::call(NULL,"");
         }
-        lexemes::node * d = call(n+2);
+        lexemes::node * d = statement(n+2);
         if(d){
             lexemes::node * e = c_operator(n+2+(d->length),")");
             if(e){
@@ -61,13 +61,17 @@ lexemes::node * parser::call(int n){
 }
 
 lexemes::node * parser::expression(int n){
+    lexemes::node * a = add(n);
+    if(a){
+        return a;
+    }
     return NULL;
 }
 
-/*
-lexemes::node * parser::add(){
+lexemes::node * parser::add(int n){
+    LOG_DEBUG("Parser: try add "<<n);
     lexemes::node * a = number(n);
-    bool b = operator(n+1,"+");
+    lexemes::node * b = c_operator(n+1,"+");
     if (a && b){
         lexemes::node * c = add(n+2);
         if (c) {
@@ -82,13 +86,15 @@ lexemes::node * parser::add(){
     return NULL;
 }
 
-lexemes::node * parser::number(){
-    if (getToken(n).type == tokentypes::NUMBER) {
+
+lexemes::node * parser::number(int n){
+    LOG_DEBUG("Parser: try number "<<n);
+    if (c_type(n,tokentypes::NUMBER)) {
         return new lexemes::number(getToken(n).tokenstring);
     }
     return NULL;
 }
-*/
+
 lexemes::name * parser::name(int n){
     LOG_DEBUG("Parser: try name "<<n);
     if(c_type(n,tokentypes::NAME)){
