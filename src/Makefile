@@ -4,7 +4,7 @@ bin = ../bin
 
 $(bin)/kumo: $(objects)
 	g++ $(objects) -o $(bin)/kumo
-	$(bin)/kumo
+	$(bin)/kumo ../examples/test.kmp
 
 $(bin)/main.o: main.cpp
 	g++ -c main.cpp -o $(bin)/main.o

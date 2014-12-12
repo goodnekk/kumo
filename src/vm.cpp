@@ -24,9 +24,17 @@ void vm::run(){
                 LOG_DEBUG("ADD");
                 push_stack(pop_stack()+pop_stack());
                 break;
+            case instructions::SUB:
+                LOG_DEBUG("SUB");
+                push_stack(pop_stack()-pop_stack());
+                break;
             case instructions::MULT:
                 LOG_DEBUG("MULT");
                 push_stack(pop_stack()*pop_stack());
+                break;
+            case instructions::DIV:
+                LOG_DEBUG("DIV");
+                push_stack(pop_stack()/pop_stack());
                 break;
             case instructions::PRINT:
                 LOG(pop_stack());

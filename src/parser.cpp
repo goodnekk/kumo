@@ -17,6 +17,7 @@ lexemes::node * parser::parse(vector<token> list){
     }
 }
 
+//get the next token from the vector
 token parser::getToken(int n){
     if (n<tokens.size())
         return tokens[n];
@@ -24,6 +25,7 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
+//start by parsing statements
 lexemes::node * parser::statement(int n){
     //simple statements
     lexemes::node * a = call(n);
@@ -83,11 +85,23 @@ lexemes::node * parser::addsub(int n){
         a = parenthesized(n);
     }
     if(a){
+        //check for plus or minus
+        bool minus = false;
         lexemes::node * b = c_operator(n+(a->length),"+");
+        if(!b){
+            minus = true;
+            b = c_operator(n+(a->length),"-");
+        }
+
         if (b){
             lexemes::node * c = addsub(n+(a->length)+1);
             if (c) {
-                return new lexemes::arithmetic(a,c,"+");
+                if (minus){
+                    return new lexemes::arithmetic(a,c,"-");
+                } else{
+                    return new lexemes::arithmetic(a,c,"+");
+                }
+
             }
             return NULL;
         }
@@ -103,11 +117,21 @@ lexemes::node * parser::multdiv(int n){
         a = parenthesized(n);
     }
     if (a){
+        bool divide = false;
         lexemes::node * b = c_operator(n+(a->length),"*");
+        if(!b){
+            divide = true;
+            b = c_operator(n+(a->length),"/");
+        }
         if(b){
             lexemes::node * c = multdiv(n+(a->length)+1);
             if (c) {
-                return new lexemes::arithmetic(a,c,"*");
+                if(divide){
+                    return new lexemes::arithmetic(a,c,"/");
+                } else{
+                    return new lexemes::arithmetic(a,c,"*");
+                }
+
             }
             return NULL;
         }
