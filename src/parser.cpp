@@ -7,13 +7,13 @@
 lexemes::node * parser::parse(vector<token> list){
     LOG_DEBUG("Parser: Started");
     tokens = list;
-    lexemes::node * a = statement(0);
+    lexemes::node * a = program(0);
     if(a) {
         LOG_DEBUG("Parser: Correctly parsed");
         return a;
     }
     else {
-        LOG_ERROR("Parser: Parser failed, incomplete parse.");
+        LOG_COMPILE_ERROR("Parser failed, incomplete parse.");
     }
 }
 
@@ -25,12 +25,37 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
-//start by parsing statements
+//A program is a list of statements
+lexemes::node * parser::program(int n){
+    vector <lexemes::node*> p;
+
+    //continue until we have reached the end of the program
+    while(!c_endofprogram(n)){
+        lexemes::node * s = statement(n);
+        if(s){
+            p.push_back(s);
+            n+=(s->length)+1;
+        } else {
+
+            return NULL;
+        }
+    }
+    return new lexemes::program(p);
+}
+
+//statements are calls, expressions, definitions, flow control
+//each statement should finish with a new line
 lexemes::node * parser::statement(int n){
+    LOG_DEBUG("Parser: try statement "<<n);
     //simple statements
     lexemes::node * a = call(n);
     if(a){
-        return a;
+        if(c_endofline(n+(a->length))){
+            return a;
+        } else {
+            LOG_COMPILE_ERROR("Expected end of line");
+            return NULL;
+        }
     }
     lexemes::node * b = expression(n);
     if(b){
@@ -40,6 +65,7 @@ lexemes::node * parser::statement(int n){
     //control structures
 }
 
+//a function call: name(argument)
 lexemes::node * parser::call(int n){
     LOG_DEBUG("Parser: try call "<<n);
     //word(statement)
@@ -63,6 +89,9 @@ lexemes::node * parser::call(int n){
     return NULL;
 }
 
+//an expression: math 1+2*3
+//operator precedence is:
+//parenthesis, addsub, multdiv
 lexemes::node * parser::expression(int n){
     LOG_DEBUG("Parser: try expression "<<n);
     lexemes::node * a = addsub(n);
@@ -77,6 +106,9 @@ lexemes::node * parser::expression(int n){
 
     return NULL;
 }
+
+//checks for addition or subtraction
+//gives precedence to multiplication by checking that first
 
 lexemes::node * parser::addsub(int n){
     LOG_DEBUG("Parser: try add/subtract "<<n);
@@ -110,6 +142,8 @@ lexemes::node * parser::addsub(int n){
     return NULL;
 }
 
+//checks for multiplication and division
+//else evaluates to a number
 lexemes::node * parser::multdiv(int n){
     LOG_DEBUG("Parser: try multiply/divide "<<n);
     lexemes::node * a = number(n);
@@ -139,7 +173,7 @@ lexemes::node * parser::multdiv(int n){
     }
     return NULL;
 }
-
+//checks for parenthesized expressions. Which are evaluated first
 lexemes::node * parser::parenthesized(int n){
     LOG_DEBUG("Parser: try parenthesized "<<n);
     lexemes::node * a = c_operator(n,"(");
@@ -160,7 +194,7 @@ lexemes::node * parser::parenthesized(int n){
     return NULL;
 }
 
-
+//terminal... number[0..9]
 lexemes::node * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);
     if (c_type(n,tokentypes::NUMBER)) {
@@ -169,6 +203,7 @@ lexemes::node * parser::number(int n){
     return NULL;
 }
 
+//terminal... name [a..bA..B]
 lexemes::name * parser::name(int n){
     LOG_DEBUG("Parser: try name "<<n);
     if(c_type(n,tokentypes::NAME)){
@@ -177,6 +212,7 @@ lexemes::name * parser::name(int n){
     return NULL;
 }
 
+//terminal... operators like * + ( ) ,
 lexemes::node * parser::c_operator(int n, string w){
     LOG_DEBUG("Parser: try operator '"<<w<<"' "<<n);
     if (c_type(n,tokentypes::OPERATOR) && c_string(n,w)) {
@@ -185,6 +221,7 @@ lexemes::node * parser::c_operator(int n, string w){
     return NULL;
 }
 
+//convenience function that checks type of a token
 bool parser::c_type(int n, int t){
     if (getToken(n).type == t) {
         return true;
@@ -192,8 +229,26 @@ bool parser::c_type(int n, int t){
     return false;
 }
 
+//convenience function that checks value string of a token
 bool parser::c_string(int n, string w){
     if(getToken(n).tokenstring == w){
+        return true;
+    }
+    return false;
+}
+
+//convenience function that returns true if the end of line was reached
+bool parser::c_endofline(int n){
+    LOG_DEBUG("Parser: try NEWLINE "<<n);
+    if(c_type(n,tokentypes::NEWLINE)){
+        return true;
+    }
+    return false;
+}
+
+//convenience function that returns true if the end of the program was reached
+bool parser::c_endofprogram(int n){
+    if(c_type(n,tokentypes::NOTASGN)){
         return true;
     }
     return false;

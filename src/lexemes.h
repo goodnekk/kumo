@@ -9,6 +9,8 @@
 using namespace std;
 namespace lexemes{
 
+    //empty node class
+    //all nodes inherit from this one
     class node {
     public:
         int length;
@@ -17,6 +19,9 @@ namespace lexemes{
     };
 
     //terminals
+
+    //number, converts number string to int
+    //pushes a constant onto the stack
     class number: public node {
     public:
         int value;
@@ -32,6 +37,7 @@ namespace lexemes{
         };
     };
 
+    //name, contains name string
     class name: public node{
     public:
         string value;
@@ -41,7 +47,20 @@ namespace lexemes{
         };
     };
 
+    class program: public node{
+    public:
+        vector <node*> list;
+        program(vector <node*> l){
+            list = l;
+        }
+        void eval(vector<int> * p){
+            for(int i=0; i<list.size(); i++){
+                list[i]->eval(p);
+            }
+        }
+    };
     //nonterminals
+    //call, evaluates arguments and performs function call
     class call: public node{
     public:
         node * argument;
@@ -62,6 +81,8 @@ namespace lexemes{
         };
     };
 
+    //arithmatic, evaluates a simple mathmatical statement
+    //first evaluates it's children
     class arithmetic: public node {
     public:
         node * r;
@@ -81,7 +102,7 @@ namespace lexemes{
                 code = instructions::DIV;
             } else{
                 code = 0;
-                LOG_DEBUG("PARSER ERROR: ivalid arithmatic: "<<op);
+                LOG_DEBUG("PARSER ERROR: invalid arithmatic: "<<op);
             }
         };
         void eval(vector<int> * p){

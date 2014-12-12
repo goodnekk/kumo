@@ -16,6 +16,7 @@ class parser{
         //recursive analysis
         //non terminals
         token getToken(int n);
+        lexemes::node * program(int n);
         lexemes::node * statement(int n);
 
             lexemes::node * call(int n);
@@ -34,7 +35,8 @@ class parser{
         //low level compare functions
         bool c_type(int n, int t);
         bool c_string(int n,string w);
-
+        bool c_endofline(int n);
+        bool c_endofprogram(int n);
     public:
         lexemes::node * parse(vector<token> list);
 };
