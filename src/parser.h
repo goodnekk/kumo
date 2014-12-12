@@ -18,13 +18,15 @@ class parser{
         token getToken(int n);
         lexemes::node * statement(int n);
 
-        lexemes::node * call(int n);
-        lexemes::node * expression(int n);
-        lexemes::node * add(int n);
+            lexemes::node * call(int n);
+            lexemes::node * expression(int n);
+                lexemes::node * addsub(int n);
+                lexemes::node * multdiv(int n);
+                lexemes::node * parenthesized(int n);
+
 
         //terminals
         lexemes::node * number(int n);
-
 
         //high level compare functions
         lexemes::name * name(int n);

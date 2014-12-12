@@ -13,16 +13,20 @@ void vm::load(vector<int> prg){
 void vm::run(){
     while(programPoint<program.size()){
         int instruction = fetch();
-
+        int var = 0;
         switch(instruction){
             case instructions::PUSH_C:
-                LOG_DEBUG("PUSH_C");
-                push_stack(fetch());
+                 var = fetch();
+                LOG_DEBUG("PUSH_C: "<<var);
+                push_stack(var);
                 break;
             case instructions::ADD:
                 LOG_DEBUG("ADD");
-
                 push_stack(pop_stack()+pop_stack());
+                break;
+            case instructions::MULT:
+                LOG_DEBUG("MULT");
+                push_stack(pop_stack()*pop_stack());
                 break;
             case instructions::PRINT:
                 LOG(pop_stack());

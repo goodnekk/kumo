@@ -1,0 +1,22 @@
+exponents and roots
+multiplication and division
+addition and subtraction
+
+1+2*3 = 1+(2*3) = 7
+2*3+1 = 2*(3+1) = 8
+
+E: AS | P
+AS: MD + AS | P + AS | MD
+MD: N  * MD | P * MD | N
+N : Number | Name | Function
+P: (AS)
+
+(2+1)*3+1
+
+E
+AS
+MD             + AS
+P         * MD + AS
+(AS)      * MD + AS
+(MD + AS) * MD + AS
+(N  + AS) * MD + AS

@@ -46,13 +46,14 @@ lexemes::node * parser::call(int n){
     if(a && b){
         lexemes::node * c = c_operator(n+2,")");
         if(c){
-            LOG_DEBUG("Parser: simple call ");
+            LOG_DEBUG("Parser: found simple call");
             return new lexemes::call(NULL,"");
         }
         lexemes::node * d = statement(n+2);
         if(d){
             lexemes::node * e = c_operator(n+2+(d->length),")");
             if(e){
+                LOG_DEBUG("Parser: found call");
                 return new lexemes::call(d,a->value);
             }
         }
@@ -61,26 +62,75 @@ lexemes::node * parser::call(int n){
 }
 
 lexemes::node * parser::expression(int n){
-    lexemes::node * a = add(n);
+    LOG_DEBUG("Parser: try expression "<<n);
+    lexemes::node * a = addsub(n);
     if(a){
+        return a;
+    }
+
+    lexemes::node * b = parenthesized(n);
+    if(b){
+        return b;
+    }
+
+    return NULL;
+}
+
+lexemes::node * parser::addsub(int n){
+    LOG_DEBUG("Parser: try add/subtract "<<n);
+    lexemes::node * a = multdiv(n);
+    if(!a){
+        a = parenthesized(n);
+    }
+    if(a){
+        lexemes::node * b = c_operator(n+(a->length),"+");
+        if (b){
+            lexemes::node * c = addsub(n+(a->length)+1);
+            if (c) {
+                return new lexemes::arithmetic(a,c,"+");
+            }
+            return NULL;
+        }
         return a;
     }
     return NULL;
 }
 
-lexemes::node * parser::add(int n){
-    LOG_DEBUG("Parser: try add "<<n);
+lexemes::node * parser::multdiv(int n){
+    LOG_DEBUG("Parser: try multiply/divide "<<n);
     lexemes::node * a = number(n);
-    lexemes::node * b = c_operator(n+1,"+");
-    if (a && b){
-        lexemes::node * c = add(n+2);
-        if (c) {
-            return new lexemes::addition(a,c);
+    if(!a){
+        a = parenthesized(n);
+    }
+    if (a){
+        lexemes::node * b = c_operator(n+(a->length),"*");
+        if(b){
+            lexemes::node * c = multdiv(n+(a->length)+1);
+            if (c) {
+                return new lexemes::arithmetic(a,c,"*");
+            }
+            return NULL;
         }
+        return a;
+    }
+    return NULL;
+}
 
-        lexemes::node * d = number(n+2);
-        if (d){
-            return new lexemes::addition(a,d);
+lexemes::node * parser::parenthesized(int n){
+    LOG_DEBUG("Parser: try parenthesized "<<n);
+    lexemes::node * a = c_operator(n,"(");
+    if(a){
+        lexemes::node * b = addsub(n+1);
+        if(b){
+            lexemes::node * c = c_operator(n+1+b->length,")");
+            if(c){
+                LOG_DEBUG("Parser: found parethesized");
+                b->length+=2;
+                return b;
+            } else {
+                LOG_COMPILE_ERROR("Unballanced parenthesis, expected ')'");
+                return NULL;
+            }
         }
     }
     return NULL;
@@ -104,7 +154,7 @@ lexemes::name * parser::name(int n){
 }
 
 lexemes::node * parser::c_operator(int n, string w){
-    LOG_DEBUG("Parser: try operator "<<n);
+    LOG_DEBUG("Parser: try operator '"<<w<<"' "<<n);
     if (c_type(n,tokentypes::OPERATOR) && c_string(n,w)) {
         return new lexemes::node();
     }

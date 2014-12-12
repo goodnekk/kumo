@@ -62,19 +62,32 @@ namespace lexemes{
         };
     };
 
-    class addition: public node {
+    class arithmetic: public node {
     public:
         node * r;
         node * l;
-        addition(node * left, node * right){
+        int code;
+        arithmetic(node * left, node * right, string op){
             l = left;
             r = right;
             length = (l->length)+(r->length)+1;
+            if(op=="+"){
+                code = instructions::ADD;
+            } else if(op=="-"){
+                code = instructions::SUB;
+            } else if(op=="*"){
+                code = instructions::MULT;
+            } else if(op=="/"){
+                code = instructions::DIV;
+            } else{
+                code = 0;
+                LOG_DEBUG("PARSER ERROR: ivalid arithmatic: "<<op);
+            }
         };
         void eval(vector<int> * p){
             r->eval(p);
             l->eval(p);
-            p->push_back(instructions::ADD);
+            p->push_back(code);
         };
     };
 }
