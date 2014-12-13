@@ -16,9 +16,19 @@ void vm::run(){
         int var = 0;
         switch(instruction){
             case instructions::PUSH_C:
-                 var = fetch();
+                var = fetch();
                 LOG_DEBUG("PUSH_C: "<<var);
                 push_stack(var);
+                break;
+            case instructions::PUSH_R:
+                var = fetch();
+                LOG_DEBUG("PUSH_R: "<<var);
+                push_stack(get_ram(var));
+                break;
+            case instructions::POP_R:
+                var = fetch();
+                LOG_DEBUG("POP_R: "<<var);
+                store_ram(var, pop_stack());
                 break;
             case instructions::ADD:
                 LOG_DEBUG("ADD");
@@ -59,4 +69,12 @@ void vm::push_stack(int val){
 int vm::pop_stack(){
     stackPoint--;
     return stack[stackPoint];
+}
+
+void vm::store_ram(int reg, int val){
+    ram[reg]=val;
+}
+
+int vm::get_ram(int reg){
+    return ram[reg];
 }
