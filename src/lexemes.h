@@ -47,6 +47,21 @@ namespace lexemes{
         };
     };
 
+    class variable: public node{
+    public:
+        string value;
+        variable(string v){
+            length = 1;
+            value = v;
+        };
+        void eval(vector<int> * p){
+            p->push_back(instructions::PUSH_R);
+            p->push_back(0);//read register
+        };
+    };
+
+    //nonterminals
+    //program, loops through each statement
     class program: public node{
     public:
         vector <node*> list;
@@ -59,7 +74,25 @@ namespace lexemes{
             }
         }
     };
-    //nonterminals
+
+    //assignment, stores value in a variable
+    class assignment: public node{
+    public:
+        node * variable;
+        node * expression;
+
+        assignment(node * v, node * e){
+            variable = v;
+            expression = e;
+            length = (e->length)+2;
+        };
+        void eval(vector<int> * p){
+            expression->eval(p);
+            p->push_back(instructions::POP_R);
+            p->push_back(0); //variable point
+        }
+    };
+
     //call, evaluates arguments and performs function call
     class call: public node{
     public:

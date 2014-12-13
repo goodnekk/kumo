@@ -57,12 +57,35 @@ lexemes::node * parser::statement(int n){
             return NULL;
         }
     }
-    lexemes::node * b = expression(n);
+    //simple statements
+    lexemes::node * b = assignment(n);
     if(b){
-        return b;
+        if(c_endofline(n+(b->length))){
+            return b;
+        } else {
+            LOG_COMPILE_ERROR("Expected end of line");
+            return NULL;
+        }
+    }
+    lexemes::node * c = expression(n);
+    if(c){
+        return c;
     }
     return NULL;
     //control structures
+}
+
+lexemes::node * parser::assignment(int n){
+    LOG_DEBUG("Parser: try assignment "<<n);
+    lexemes::name * a = name(n);
+    lexemes::node * b = c_operator(n+1,"=");
+    if(a && b){
+        lexemes::node * c = expression(n+2);
+        if(c){
+            return new lexemes::assignment(a,c);
+        }
+    }
+    return NULL;
 }
 
 //a function call: name(argument)
@@ -146,7 +169,7 @@ lexemes::node * parser::addsub(int n){
 //else evaluates to a number
 lexemes::node * parser::multdiv(int n){
     LOG_DEBUG("Parser: try multiply/divide "<<n);
-    lexemes::node * a = number(n);
+    lexemes::node * a = operand(n);
     if(!a){
         a = parenthesized(n);
     }
@@ -173,6 +196,7 @@ lexemes::node * parser::multdiv(int n){
     }
     return NULL;
 }
+
 //checks for parenthesized expressions. Which are evaluated first
 lexemes::node * parser::parenthesized(int n){
     LOG_DEBUG("Parser: try parenthesized "<<n);
@@ -192,6 +216,24 @@ lexemes::node * parser::parenthesized(int n){
         }
     }
     return NULL;
+}
+
+lexemes::node * parser::operand(int n){
+    LOG_DEBUG("Parser: try operand "<<n);
+    lexemes::node * a = number(n);
+    if(a){
+        return a;
+    }
+
+    lexemes::node * b = name(n);
+    if(b){
+        return new lexemes::variable(getToken(n).tokenstring);
+    }
+
+    lexemes::node * c = call(n);
+    if(c){
+        return c;
+    }
 }
 
 //terminal... number[0..9]

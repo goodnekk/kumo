@@ -19,12 +19,13 @@ class parser{
         lexemes::node * program(int n);
         lexemes::node * statement(int n);
 
+            lexemes::node * assignment(int n);
             lexemes::node * call(int n);
             lexemes::node * expression(int n);
                 lexemes::node * addsub(int n);
                 lexemes::node * multdiv(int n);
                 lexemes::node * parenthesized(int n);
-
+                lexemes::node * operand(int n);
 
         //terminals
         lexemes::node * number(int n);
