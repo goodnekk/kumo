@@ -5,6 +5,8 @@
 #include <vector>
 #include <iostream>
 #include "instructions.h"
+#include "program.h"
+#include "log.h"
 
 using namespace std;
 namespace lexemes{
@@ -15,7 +17,7 @@ namespace lexemes{
     public:
         int length;
         node(){length = 1;};
-        virtual void eval(vector<int> * p){};
+        virtual void eval(program * p){};
     };
 
     //terminals
@@ -31,9 +33,9 @@ namespace lexemes{
             istringstream convert(characters);
             convert >> value;
         };
-        void eval(vector<int> * p){
-            p->push_back(instructions::PUSH_C);
-            p->push_back(value);
+        void eval(program * p){
+            p->push_instruction(instructions::PUSH_C);
+            p->push_instruction(value);
         };
     };
 
@@ -54,21 +56,25 @@ namespace lexemes{
             length = 1;
             value = v;
         };
-        void eval(vector<int> * p){
-            p->push_back(instructions::PUSH_R);
-            p->push_back(0);//read register
+        void eval(program * p){
+            p->push_instruction(instructions::PUSH_R);
+            int number = p->get_variable(value);
+            if(number==-1){
+                LOG_COMPILE_ERROR("Using variable before assignment");
+            }
+            p->push_instruction(number);//read register
         };
     };
 
     //nonterminals
     //program, loops through each statement
-    class program: public node{
+    class statementlist: public node{
     public:
         vector <node*> list;
-        program(vector <node*> l){
+        statementlist(vector <node*> l){
             list = l;
         }
-        void eval(vector<int> * p){
+        void eval(program * p){
             for(int i=0; i<list.size(); i++){
                 list[i]->eval(p);
             }
@@ -78,18 +84,19 @@ namespace lexemes{
     //assignment, stores value in a variable
     class assignment: public node{
     public:
-        node * variable;
+        name * variable;
         node * expression;
 
-        assignment(node * v, node * e){
+        assignment(name * v, node * e){
             variable = v;
             expression = e;
             length = (e->length)+2;
         };
-        void eval(vector<int> * p){
+        void eval(program * p){
             expression->eval(p);
-            p->push_back(instructions::POP_R);
-            p->push_back(0); //variable point
+            p->push_instruction(instructions::POP_R);
+            int number = p->assign_variable(variable->value);
+            p->push_instruction(number); //variable point
         }
     };
 
@@ -108,9 +115,9 @@ namespace lexemes{
                 length = 3;
             }
         };
-        void eval(vector<int> * p){
+        void eval(program * p){
             argument->eval(p);
-            p->push_back(instructions::PRINT);
+            p->push_instruction(instructions::PRINT);
         };
     };
 
@@ -138,10 +145,10 @@ namespace lexemes{
                 LOG_DEBUG("PARSER ERROR: invalid arithmatic: "<<op);
             }
         };
-        void eval(vector<int> * p){
+        void eval(program * p){
             r->eval(p);
             l->eval(p);
-            p->push_back(code);
+            p->push_instruction(code);
         };
     };
 }

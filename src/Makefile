@@ -1,10 +1,10 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/vm.o $(bin)/generator.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/vm.o $(bin)/generator.o
 
 bin = ../bin
 
 $(bin)/kumo: $(objects)
 	g++ $(objects) -o $(bin)/kumo
-	$(bin)/kumo ../examples/test.kmp
+	$(bin)/kumo ../examples/test.kmo
 
 $(bin)/main.o: main.cpp
 	g++ -c main.cpp -o $(bin)/main.o
@@ -14,6 +14,9 @@ $(bin)/lexer.o: lexer.cpp
 
 $(bin)/token.o: token.cpp
 	g++ -c token.cpp -o $(bin)/token.o
+
+$(bin)/program.o: program.cpp
+	g++ -c program.cpp -o $(bin)/program.o
 
 $(bin)/parser.o: parser.cpp
 	g++ -c parser.cpp -o $(bin)/parser.o

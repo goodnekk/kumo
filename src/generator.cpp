@@ -6,6 +6,6 @@
 
 vector<int> generator::generate(lexemes::node * a){
     LOG_DEBUG("Generator: started");
-    a->eval(&program);
-    return program;
+    a->eval(&p);
+    return p.get_list();
 }

@@ -40,7 +40,7 @@ lexemes::node * parser::program(int n){
             return NULL;
         }
     }
-    return new lexemes::program(p);
+    return new lexemes::statementlist(p);
 }
 
 //statements are calls, expressions, definitions, flow control

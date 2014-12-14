@@ -3,11 +3,14 @@
 #include <vector>
 
 #include "lexemes.h"
+#include "program.h"
 
 using namespace std;
+
 class generator{
 private:
-    vector<int> program; //this will contain the program
+    //vector<int> program; //this will contain the program
+    program p;
 public:
     vector<int> generate(lexemes::node * a);
 };
