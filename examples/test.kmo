@@ -1,2 +1,8 @@
-a=b+2
-print(a)
+hello = 5
+print(hello)
+world = 10
+print(world)
+hello = hello + hello
+print(hello)
+world = world - hello
+print(world)
