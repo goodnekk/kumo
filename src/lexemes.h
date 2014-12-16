@@ -121,6 +121,32 @@ namespace lexemes{
         };
     };
 
+    //declaration, defines a function
+    class declaration: public node{
+    public:
+        node * argument;
+        node * stmnt;
+
+        declaration(node * a, node * s){
+            argument = a;
+            stmnt = s;
+            if (a){
+                length = 4+(a->length)+(s->length);
+            } else{
+                length = 4+(s->length);
+            }
+        };
+        void eval(program * p){
+            int pointer = p->new_function();
+            stmnt->eval(p); //write the statements to the new block
+            //return to program
+            p->pop_function();
+            //push function pointer onto the stack
+            p->push_instruction(instructions::PUSH_C);
+            p->push_instruction(pointer);
+        };
+    };
+
     //arithmatic, evaluates a simple mathmatical statement
     //first evaluates it's children
     class arithmetic: public node {

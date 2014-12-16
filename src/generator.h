@@ -12,5 +12,5 @@ private:
     //vector<int> program; //this will contain the program
     program p;
 public:
-    vector<int> generate(lexemes::node * a);
+    vector< vector<int> > generate(lexemes::node * a);
 };

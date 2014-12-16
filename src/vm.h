@@ -11,8 +11,9 @@ class vm {
 
         int ram[10]; //random acces storage for local variables
 
-        vector<int> program;
-        int programPoint;
+        vector< vector<int> > program;
+        int programPoint; //points to the current operation
+        int functionPoint; //points to the current function
 
         void push_stack(int val);
         int pop_stack();
@@ -22,7 +23,7 @@ class vm {
         int fetch();
 
     public:
-        void load(vector<int> prg);
+        void load(vector< vector<int> > prg);
         void run();
 
 };

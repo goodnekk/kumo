@@ -4,14 +4,17 @@
 #include "vm.h"
 #include "instructions.h"
 
-void vm::load(vector<int> prg){
+void vm::load(vector< vector<int> > prg){
+    LOG_DEBUG("VM Loaded program with: "<<prg.size()<<" functions.");
     program = prg;
     programPoint = 0;
+    functionPoint = 0;
     stackPoint = 0;
 }
 
 void vm::run(){
-    while(programPoint<program.size()){
+    //loop through each operation untill the end of the program is reached
+    while(programPoint<program[functionPoint].size()){
         int instruction = fetch();
         int var = 0;
         switch(instruction){
@@ -46,6 +49,18 @@ void vm::run(){
                 LOG_DEBUG("DIV");
                 push_stack(pop_stack()/pop_stack());
                 break;
+            case instructions::CALL:
+                var = fetch();
+                LOG_DEBUG("CALL "<<var);
+                push_stack(programPoint);
+                push_stack(functionPoint);
+                functionPoint = var;
+                programPoint = 0;
+                break;
+            case instructions::RETURN:
+                functionPoint = pop_stack();
+                programPoint = pop_stack();
+                break;
             case instructions::PRINT:
                 LOG(pop_stack());
                 break;
@@ -56,7 +71,7 @@ void vm::run(){
 }
 
 int vm::fetch(){
-    int a = program[programPoint];
+    int a = program[functionPoint][programPoint];
     programPoint++;
     return a;
 }

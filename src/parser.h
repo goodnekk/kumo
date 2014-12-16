@@ -27,6 +27,8 @@ class parser{
                 lexemes::node * parenthesized(int n);
                 lexemes::node * operand(int n);
 
+            lexemes::node * declaration(int n);
+
         //terminals
         lexemes::node * number(int n);
 

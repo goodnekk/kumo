@@ -34,9 +34,8 @@ lexemes::node * parser::program(int n){
         lexemes::node * s = statement(n);
         if(s){
             p.push_back(s);
-            n+=(s->length)+1;
+            n+=(s->length)+1; //plus one for eol
         } else {
-
             return NULL;
         }
     }
@@ -47,7 +46,14 @@ lexemes::node * parser::program(int n){
 //each statement should finish with a new line
 lexemes::node * parser::statement(int n){
     LOG_DEBUG("Parser: try statement "<<n);
-    //simple statements
+    //simple call statements
+
+    lexemes::node * d = declaration(n);
+    if(d){
+        return d;
+    }
+
+    //FIXME: call should be part of expression
     lexemes::node * a = call(n);
     if(a){
         if(c_endofline(n+(a->length))){
@@ -57,7 +63,7 @@ lexemes::node * parser::statement(int n){
             return NULL;
         }
     }
-    //simple statements
+    //assignment statement a = expression
     lexemes::node * b = assignment(n);
     if(b){
         if(c_endofline(n+(b->length))){
@@ -67,6 +73,7 @@ lexemes::node * parser::statement(int n){
             return NULL;
         }
     }
+
     lexemes::node * c = expression(n);
     if(c){
         return c;
@@ -80,6 +87,11 @@ lexemes::node * parser::assignment(int n){
     lexemes::name * a = name(n);
     lexemes::node * b = c_operator(n+1,"=");
     if(a && b){
+        lexemes::node * d = declaration(n+2);
+        if(d){
+            return new lexemes::assignment(a,d);
+        }
+        
         lexemes::node * c = expression(n+2);
         if(c){
             return new lexemes::assignment(a,c);
@@ -225,17 +237,41 @@ lexemes::node * parser::operand(int n){
         return a;
     }
 
-    lexemes::node * b = name(n);
-    if(b){
-        return new lexemes::variable(getToken(n).tokenstring);
-    }
-
     lexemes::node * c = call(n);
     if(c){
         return c;
     }
+
+    lexemes::node * b = name(n);
+    if(b){
+        return new lexemes::variable(getToken(n).tokenstring);
+    }
+    return NULL;
 }
 
+lexemes::node * parser::declaration(int n){
+    LOG_DEBUG("Parser: try declaration "<<n);
+    //(name){ expression }
+    lexemes::node * a = c_operator(n, "(");
+    lexemes::node * b = name(n+1);
+    lexemes::node * c = c_operator(n+2, ")");
+    if(a && b && c) {
+        lexemes::node * d = c_operator(n+3, "{");
+        if(d){
+            lexemes::node * e = expression(n+4);
+            if(e){
+                lexemes::node * f = c_operator(n+4+(e->length), "}");
+                if(f){
+                    return new lexemes::declaration(b, e);
+                } else {
+                    LOG_COMPILE_ERROR("expected }");
+                }
+            }
+        }
+
+    }
+    return NULL;
+}
 //terminal... number[0..9]
 lexemes::node * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);

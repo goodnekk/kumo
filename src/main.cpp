@@ -1,3 +1,4 @@
+#include "log.h"
 #include "lexer.h"
 #include "parser.h"
 #include "generator.h"
@@ -7,12 +8,14 @@
 #include <sstream>
 #include <fstream>
 
-int main(int argc, char* argv[]) {
+const static float revision = 0.01;
 
+int main(int argc, char* argv[]) {
+	LOG("hello kumo "<<revision);
 	//load program into memory
 	std::fstream t(argv[1]);
 	if (!t) {
-		std::cout << "please specify file" << std::endl;
+		LOG_ERROR("please specify file");
 		return 0;
 	}
 	std::stringstream buffer;

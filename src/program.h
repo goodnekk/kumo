@@ -8,12 +8,19 @@ using namespace std;
 
 class program{
 private:
-    vector<int> list;
+
+    int current_function;
+    vector< vector<int> > list;
     vector<string> variables;
+    vector<int> call_stack;
+
 public:
+    program();
     void push_instruction(int i);
     int get_variable(string n);
     int assign_variable(string n);
+    int new_function();
+    void pop_function();
 
-    vector<int> get_list();
+    vector< vector<int> > get_list();
 };
