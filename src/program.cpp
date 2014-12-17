@@ -29,7 +29,6 @@ int program::assign_variable(string n){
     }
     LOG_DEBUG("var "<<n<<" found earlier");
     return i;
-
 }
 
 int program::new_function(){

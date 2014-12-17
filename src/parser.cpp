@@ -257,12 +257,12 @@ lexemes::node * parser::declaration(int n){
     LOG_DEBUG("Parser: try declaration "<<n);
     //(name){ expression }
     lexemes::node * a = c_operator(n, "(");
-    lexemes::node * b = name(n+1);
+    lexemes::name * b = name(n+1);    //TODO: deal with more than one argument in declaration
     lexemes::node * c = c_operator(n+2, ")");
     if(a && b && c) {
         lexemes::node * d = c_operator(n+3, "{");
         if(d){
-            lexemes::node * e = expression(n+4);
+            lexemes::node * e = expression(n+4); //TODO: deal with a larger block of code
             if(e){
                 lexemes::node * f = c_operator(n+4+(e->length), "}");
                 if(f){
@@ -273,7 +273,6 @@ lexemes::node * parser::declaration(int n){
                 }
             }
         }
-
     }
     return NULL;
 }

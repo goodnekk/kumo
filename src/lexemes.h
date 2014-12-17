@@ -118,6 +118,7 @@ namespace lexemes{
             }
         };
         void eval(program * p){
+            argument->eval(p);
             pointername->eval(p);
             p->push_instruction(instructions::CALL);
             //p->push_instruction();
@@ -127,10 +128,10 @@ namespace lexemes{
     //declaration, defines a function
     class declaration: public node{
     public:
-        node * argument;
+        name * argument;
         node * stmnt;
 
-        declaration(node * a, node * s){
+        declaration(name * a, node * s){
             argument = a;
             stmnt = s;
             if (a){
@@ -139,16 +140,28 @@ namespace lexemes{
                 length = 4+(s->length);
             }
         };
-        
+
         void eval(program * p){
+            //move to new function
             int pointer = p->new_function();
+
+            //create argument variables by poping values from the stack
+            int firstargument = p->assign_variable(argument->value);
+            p->push_instruction(instructions::POP_R);
+            p->push_instruction(firstargument);
+
+            //write function code statements
             stmnt->eval(p); //write the statements to the new block
             p->push_instruction(instructions::RETURN);
-            //return to program
+
+            //return to calling function
             p->pop_function();
+
             //push function pointer onto the stack
             p->push_instruction(instructions::PUSH_C);
             p->push_instruction(pointer);
+
+            //TODO:free the variables for scoping
         };
     };
 

@@ -1,7 +1,12 @@
 //Primary statements
-Statement       Call | Expression
+Block           Statement...
+
+Statement       Assignment | Call | Expression | Declaration
+
 Call            Name(arguments)
+Declaration     (arguments){Block}
 Expression      AddSub | Paren
+Assignment      Name = Declaration | Name = Expression
 
 //arithmatic
 Paren           (AddSub)
