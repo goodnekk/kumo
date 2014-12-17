@@ -1,2 +1,3 @@
 function = (a){5+5}
-print(function)
+function()
+b = 2 + 6

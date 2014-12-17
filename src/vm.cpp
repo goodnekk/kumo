@@ -10,6 +10,7 @@ void vm::load(vector< vector<int> > prg){
     programPoint = 0;
     functionPoint = 0;
     stackPoint = 0;
+    callstackPoint = 0;
 }
 
 void vm::run(){
@@ -50,16 +51,17 @@ void vm::run(){
                 push_stack(pop_stack()/pop_stack());
                 break;
             case instructions::CALL:
-                var = fetch();
-                LOG_DEBUG("CALL "<<var);
-                push_stack(programPoint);
-                push_stack(functionPoint);
+                var = pop_stack();
+                LOG_DEBUG("CALL "<< var);
+                push_callstack(programPoint);
+                push_callstack(functionPoint);
                 functionPoint = var;
                 programPoint = 0;
                 break;
             case instructions::RETURN:
-                functionPoint = pop_stack();
-                programPoint = pop_stack();
+                functionPoint = pop_callstack();
+                programPoint = pop_callstack();
+                LOG_DEBUG("RETURN "<< functionPoint);
                 break;
             case instructions::PRINT:
                 LOG(pop_stack());
@@ -84,6 +86,16 @@ void vm::push_stack(int val){
 int vm::pop_stack(){
     stackPoint--;
     return stack[stackPoint];
+}
+
+void vm::push_callstack(int val){
+    callstack[callstackPoint] = val;
+    callstackPoint++;
+}
+
+int vm::pop_callstack(){
+    callstackPoint--;
+    return callstack[callstackPoint];
 }
 
 void vm::store_ram(int reg, int val){

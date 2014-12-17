@@ -104,11 +104,12 @@ namespace lexemes{
     class call: public node{
     public:
         node * argument;
-        string name;
+        node * pointername;
 
-        call(node * a, string n){
+        call(node * n, node * a){
             argument = a;
-            name = n;
+            pointername = n;
+
             if (a){
                 length = 3+a->length;
             } else{
@@ -116,8 +117,9 @@ namespace lexemes{
             }
         };
         void eval(program * p){
-            argument->eval(p);
-            p->push_instruction(instructions::PRINT);
+            pointername->eval(p);
+            p->push_instruction(instructions::CALL);
+            //p->push_instruction();
         };
     };
 
@@ -139,6 +141,7 @@ namespace lexemes{
         void eval(program * p){
             int pointer = p->new_function();
             stmnt->eval(p); //write the statements to the new block
+            p->push_instruction(instructions::RETURN);
             //return to program
             p->pop_function();
             //push function pointer onto the stack

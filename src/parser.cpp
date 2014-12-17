@@ -91,7 +91,7 @@ lexemes::node * parser::assignment(int n){
         if(d){
             return new lexemes::assignment(a,d);
         }
-        
+
         lexemes::node * c = expression(n+2);
         if(c){
             return new lexemes::assignment(a,c);
@@ -104,20 +104,20 @@ lexemes::node * parser::assignment(int n){
 lexemes::node * parser::call(int n){
     LOG_DEBUG("Parser: try call "<<n);
     //word(statement)
-    lexemes::name * a = name(n);
+    lexemes::node * a = variable(n);
     lexemes::node * b = c_operator(n+1,"(");
     if(a && b){
         lexemes::node * c = c_operator(n+2,")");
         if(c){
             LOG_DEBUG("Parser: found simple call");
-            return new lexemes::call(NULL,"");
+            return new lexemes::call(a,NULL);
         }
         lexemes::node * d = statement(n+2);
         if(d){
             lexemes::node * e = c_operator(n+2+(d->length),")");
             if(e){
                 LOG_DEBUG("Parser: found call");
-                return new lexemes::call(d,a->value);
+                return new lexemes::call(a,d);
             }
         }
     }
@@ -242,9 +242,9 @@ lexemes::node * parser::operand(int n){
         return c;
     }
 
-    lexemes::node * b = name(n);
+    lexemes::node * b = variable(n);
     if(b){
-        return new lexemes::variable(getToken(n).tokenstring);
+        return b;
     }
     return NULL;
 }
@@ -277,6 +277,15 @@ lexemes::node * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);
     if (c_type(n,tokentypes::NUMBER)) {
         return new lexemes::number(getToken(n).tokenstring);
+    }
+    return NULL;
+}
+
+lexemes::node * parser::variable(int n){
+    LOG_DEBUG("Parser: try variable "<<n);
+    lexemes::node * b = name(n);
+    if(b){
+        return new lexemes::variable(getToken(n).tokenstring);
     }
     return NULL;
 }
