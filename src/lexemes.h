@@ -60,7 +60,8 @@ namespace lexemes{
             p->push_instruction(instructions::PUSH_R);
             int number = p->get_variable(value);
             if(number==-1){
-                LOG_COMPILE_ERROR("Using variable before assignment");
+                LOG_COMPILE_ERROR("Using '"<<value<<"' before assignment.");
+                STOP();
             }
             p->push_instruction(number);//read register
         };
@@ -138,6 +139,7 @@ namespace lexemes{
                 length = 4+(s->length);
             }
         };
+        
         void eval(program * p){
             int pointer = p->new_function();
             stmnt->eval(p); //write the statements to the new block

@@ -8,10 +8,13 @@
 #include <sstream>
 #include <fstream>
 
-const static float revision = 0.01;
+const static string revision_name = "yamanashi";
+const static int major_revision = 0;
+const static int minor_revision = 2;
+
 
 int main(int argc, char* argv[]) {
-	LOG("hello kumo "<<revision);
+	LOG("hello kumo v"<< major_revision<<"."<<minor_revision<<"("<<revision_name<<")");
 	//load program into memory
 	std::fstream t(argv[1]);
 	if (!t) {
@@ -22,7 +25,7 @@ int main(int argc, char* argv[]) {
 	buffer << t.rdbuf();
 	std::string program = buffer.str();
 
-
+	//start compilation
 	lexer l;
 	parser p;
 	generator g;

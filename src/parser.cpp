@@ -1,6 +1,6 @@
 //author: Marcel Goethals
 //Hand written parser, no lousy parser generators here.
-//takes a vector of tokens and builds a parse tree.
+//Takes a vector of tokens and builds a parse tree.
 
 #include "parser.h"
 
@@ -14,6 +14,7 @@ lexemes::node * parser::parse(vector<token> list){
     }
     else {
         LOG_COMPILE_ERROR("Parser failed, incomplete parse.");
+        STOP();
     }
 }
 
@@ -60,6 +61,7 @@ lexemes::node * parser::statement(int n){
             return a;
         } else {
             LOG_COMPILE_ERROR("Expected end of line");
+            STOP();
             return NULL;
         }
     }
@@ -70,6 +72,7 @@ lexemes::node * parser::statement(int n){
             return b;
         } else {
             LOG_COMPILE_ERROR("Expected end of line");
+            STOP();
             return NULL;
         }
     }
@@ -223,6 +226,7 @@ lexemes::node * parser::parenthesized(int n){
                 return b;
             } else {
                 LOG_COMPILE_ERROR("Unballanced parenthesis, expected ')'");
+                STOP();
                 return NULL;
             }
         }
@@ -265,6 +269,7 @@ lexemes::node * parser::declaration(int n){
                     return new lexemes::declaration(b, e);
                 } else {
                     LOG_COMPILE_ERROR("expected }");
+                    STOP();
                 }
             }
         }
