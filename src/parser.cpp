@@ -115,7 +115,7 @@ lexemes::node * parser::call(int n){
             LOG_DEBUG("Parser: found simple call");
             return new lexemes::call(a,NULL);
         }
-        lexemes::node * d = statement(n+2);
+        lexemes::node * d = argumentlist(n+2);
         if(d){
             lexemes::node * e = c_operator(n+2+(d->length),")");
             if(e){
@@ -125,6 +125,27 @@ lexemes::node * parser::call(int n){
         }
     }
     return NULL;
+}
+
+lexemes::node * parser::argumentlist(int n){
+    bool cont = true;
+    vector<lexemes::node*> list;
+    while(cont) {
+        lexemes::node * a = expression(n);
+        if(a){
+            //push onto list
+            list.push_back(a);
+            lexemes::node * s = c_operator(n+1, ",");
+            if(s){
+                n=n+2;
+            } else {
+                cont = false;
+            }
+        } else {
+            return NULL;
+        }
+    }
+    return new lexemes::argumentlist(list);
 }
 
 //an expression: math 1+2*3
@@ -253,29 +274,64 @@ lexemes::node * parser::operand(int n){
     return NULL;
 }
 
+//function declaration
 lexemes::node * parser::declaration(int n){
     LOG_DEBUG("Parser: try declaration "<<n);
-    //(name){ expression }
+    //(arguments){ expression }
     lexemes::node * a = c_operator(n, "(");
-    lexemes::name * b = name(n+1);    //TODO: deal with more than one argument in declaration
-    lexemes::node * c = c_operator(n+2, ")");
-    if(a && b && c) {
-        lexemes::node * d = c_operator(n+3, "{");
-        if(d){
-            lexemes::node * e = expression(n+4); //TODO: deal with a larger block of code
-            if(e){
-                lexemes::node * f = c_operator(n+4+(e->length), "}");
-                if(f){
-                    return new lexemes::declaration(b, e);
-                } else {
-                    LOG_COMPILE_ERROR("expected }");
-                    STOP();
+    lexemes::node * b = nameslist(n+1);
+
+    if(a) {
+        int length = 0; //in case no arguments stated
+        if(b){
+            length = b->length;
+        }
+        lexemes::node * c = c_operator(n+1+(length), ")");
+        if(c){
+            lexemes::node * d = c_operator(n+2+(length), "{");
+            if(d){
+                lexemes::node * e = expression(n+3+(length)); //TODO: deal with a larger block of code
+                if(e){
+                    lexemes::node * f = c_operator(n+3+(e->length)+(length), "}");
+                    if(f){
+                        return new lexemes::declaration(b, e);
+                    } else {
+                        LOG_COMPILE_ERROR("expected }");
+                        STOP();
+                    }
                 }
             }
         }
     }
     return NULL;
 }
+
+//list of names
+lexemes::node * parser::nameslist(int n){
+    bool cont = true;
+    vector<lexemes::name*> list;
+    while(cont) {
+        lexemes::name * a = name(n);
+        if(a){
+            //push onto list
+            list.push_back(a);
+            lexemes::node * s = c_operator(n+1, ",");
+            if(s){
+                n=n+2;
+            } else {
+                cont = false;
+            }
+        } else {
+            return NULL;
+        }
+    }
+
+    if(list.size()>0){
+        return new lexemes::nameslist(list);
+    }
+    return NULL;
+}
+
 //terminal... number[0..9]
 lexemes::node * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);

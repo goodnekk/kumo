@@ -8,10 +8,9 @@
 #include <sstream>
 #include <fstream>
 
-const static string revision_name = "yamanashi";
+const static string revision_name = "beta";
 const static int major_revision = 0;
 const static int minor_revision = 2;
-
 
 int main(int argc, char* argv[]) {
 	LOG("hello kumo v"<< major_revision<<"."<<minor_revision<<"("<<revision_name<<")");

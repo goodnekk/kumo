@@ -20,7 +20,10 @@ class parser{
         lexemes::node * statement(int n);
 
             lexemes::node * assignment(int n);
+
             lexemes::node * call(int n);
+            lexemes::node * argumentlist(int n);
+
             lexemes::node * expression(int n);
                 lexemes::node * addsub(int n);
                 lexemes::node * multdiv(int n);
@@ -28,6 +31,7 @@ class parser{
                 lexemes::node * operand(int n);
 
             lexemes::node * declaration(int n);
+            lexemes::node * nameslist(int n);
 
         //terminals
         lexemes::node * number(int n);

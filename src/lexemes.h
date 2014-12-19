@@ -118,21 +118,42 @@ namespace lexemes{
             }
         };
         void eval(program * p){
-            argument->eval(p);
+            if(argument){
+                argument->eval(p);
+            }
             pointername->eval(p);
             p->push_instruction(instructions::CALL);
             //p->push_instruction();
         };
     };
 
+    class argumentlist: public node{
+    public:
+        vector<node*> list;
+
+        argumentlist(vector<node*> a){
+            list = a;
+            for(int i=0; i<list.size(); i++){
+                length+=list[i]->length+1;
+            }
+            length-=2;//remove last comma, and initial lenght of one
+        }
+        void eval(program * p){
+            //push the arguments on backwards
+            for(int i=list.size()-1; i>=0; i--){
+                list[i]->eval(p);
+            }
+        }
+    };
+
     //declaration, defines a function
     class declaration: public node{
     public:
-        name * argument;
+        node * arguments;
         node * stmnt;
 
-        declaration(name * a, node * s){
-            argument = a;
+        declaration(node * a, node * s){
+            arguments = a;
             stmnt = s;
             if (a){
                 length = 4+(a->length)+(s->length);
@@ -144,11 +165,13 @@ namespace lexemes{
         void eval(program * p){
             //move to new function
             int pointer = p->new_function();
-
+            if(arguments){
+                arguments->eval(p);
+            }
             //create argument variables by poping values from the stack
-            int firstargument = p->assign_variable(argument->value);
-            p->push_instruction(instructions::POP_R);
-            p->push_instruction(firstargument);
+            //int firstargument = p->assign_variable(argument->value);
+            //p->push_instruction(instructions::POP_R);
+            //p->push_instruction(firstargument);
 
             //write function code statements
             stmnt->eval(p); //write the statements to the new block
@@ -162,6 +185,22 @@ namespace lexemes{
             p->push_instruction(pointer);
 
             //TODO:free the variables for scoping
+        };
+    };
+
+    class nameslist: public node{
+    public:
+        vector<name*> list;
+        nameslist(vector<name*> l){
+            list = l;
+            length = (list.size()*2)-1;
+        };
+        void eval(program * p){
+            for(int i=0; i<list.size(); i++){
+                p->push_instruction(instructions::POP_R);
+                int argument = p->assign_variable(list[i]->value);
+                p->push_instruction(argument);
+            }
         };
     };
 
