@@ -64,7 +64,7 @@ void lexer::pushToken(const int type){
 vector<token> lexer::getTokens(){
 	LOG_DEBUG("Lexed to: "<<tokens.size()<<" tokens");
 	for(int i=0; i<tokens.size(); i++){
-		tokens.at(i).print();
+		tokens.at(i).print(i);
 	}
 	return tokens;
 }

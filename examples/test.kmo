@@ -1,2 +1,13 @@
-a=(){1+2}
-a()
+add = (a,b){
+    c=a+b
+
+    d=a*c
+}
+
+sub = (e,f){
+    e-f
+}
+
+sub(5,5)
+add(4,2)
+print(4)

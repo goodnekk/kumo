@@ -72,8 +72,12 @@ namespace lexemes{
     class statementlist: public node{
     public:
         vector <node*> list;
-        statementlist(vector <node*> l){
+        statementlist(vector <node*> l, int len){
             list = l;
+            //for(int i=0; i<list.size(); i++){
+            //    length+=(list[i]->length);
+            //}
+            length=len;
         }
         void eval(program * p){
             for(int i=0; i<list.size(); i++){

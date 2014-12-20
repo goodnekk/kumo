@@ -7,7 +7,7 @@
 lexemes::node * parser::parse(vector<token> list){
     LOG_DEBUG("Parser: Started");
     tokens = list;
-    lexemes::node * a = program(0);
+    lexemes::node * a = codeblock(0);
     if(a) {
         LOG_DEBUG("Parser: Correctly parsed");
         return a;
@@ -40,9 +40,39 @@ lexemes::node * parser::program(int n){
             return NULL;
         }
     }
-    return new lexemes::statementlist(p);
+    return new lexemes::statementlist(p,n);
 }
 
+lexemes::node * parser::codeblock(int n){
+    //statements and newlines
+    bool cont = true;
+    vector<lexemes::node*> list;
+    int firstn=n;
+    while(cont) {
+        lexemes::node * a = statement(n);
+        if(a){
+            //push onto list
+            list.push_back(a);
+            bool s = c_endofline(n+(a->length));
+            if(s){
+                n+=(a->length)+1;
+            } else {
+                LOG_COMPILE_ERROR("Expected end of line");
+                STOP();
+                return NULL;
+            }
+        } else {
+            //not a statement or empty line:
+            bool b = c_endofline(n);
+            if(b){
+                n+=1; //skip empty line
+            } else{
+                cont = false;//end of codeblock
+            }
+        }
+    }
+    return new lexemes::statementlist(list,(n-firstn));
+}
 //statements are calls, expressions, definitions, flow control
 //each statement should finish with a new line
 lexemes::node * parser::statement(int n){
@@ -57,24 +87,24 @@ lexemes::node * parser::statement(int n){
     //FIXME: call should be part of expression
     lexemes::node * a = call(n);
     if(a){
-        if(c_endofline(n+(a->length))){
+        //if(c_endofline(n+(a->length))){
             return a;
-        } else {
-            LOG_COMPILE_ERROR("Expected end of line");
-            STOP();
-            return NULL;
-        }
+        //} else {
+        //    LOG_COMPILE_ERROR("Expected end of line");
+        //    STOP();
+        //    return NULL;
+        //}
     }
     //assignment statement a = expression
     lexemes::node * b = assignment(n);
     if(b){
-        if(c_endofline(n+(b->length))){
+        //if(c_endofline(n+(b->length))){
             return b;
-        } else {
-            LOG_COMPILE_ERROR("Expected end of line");
-            STOP();
-            return NULL;
-        }
+        //} else {
+        //    LOG_COMPILE_ERROR("Expected end of line");
+        //    STOP();
+        //    return NULL;
+    //}
     }
 
     lexemes::node * c = expression(n);
@@ -290,7 +320,7 @@ lexemes::node * parser::declaration(int n){
         if(c){
             lexemes::node * d = c_operator(n+2+(length), "{");
             if(d){
-                lexemes::node * e = expression(n+3+(length)); //TODO: deal with a larger block of code
+                lexemes::node * e = codeblock(n+3+(length));
                 if(e){
                     lexemes::node * f = c_operator(n+3+(e->length)+(length), "}");
                     if(f){

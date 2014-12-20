@@ -13,5 +13,5 @@ class token{
 		string tokenstring;
 
 		token(int ty, string tok);
-		void print();
+		void print(int i);
 };

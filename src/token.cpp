@@ -6,6 +6,6 @@ token::token(int ty, string tok){
     tokenstring = tok;
 }
 
-void token::print(){
-    LOG_DEBUG(tokentypes::names[type]<<"::"<<tokenstring);
+void token::print(int i){
+    LOG_DEBUG(i<<"  "<<tokentypes::names[type]<<"::"<<tokenstring);
 }
