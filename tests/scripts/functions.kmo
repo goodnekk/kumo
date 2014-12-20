@@ -1,4 +1,4 @@
 add = (a,b){
-    say(a+b)
+    print(a+b)
 }
 add(4,4)

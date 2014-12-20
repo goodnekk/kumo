@@ -1,4 +1,4 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/vm.o $(bin)/generator.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/stack.o $(bin)/vm.o $(bin)/generator.o
 
 bin = ../bin
 
@@ -23,6 +23,9 @@ $(bin)/parser.o: parser.cpp
 
 $(bin)/vm.o: vm.cpp
 	g++ -c vm.cpp -o $(bin)/vm.o
+
+$(bin)/stack.o: stack.cpp
+	g++ -c stack.cpp -o $(bin)/stack.o
 
 $(bin)/generator.o: generator.cpp
 	g++ -c generator.cpp -o $(bin)/generator.o

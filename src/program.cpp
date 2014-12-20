@@ -12,7 +12,8 @@ void program::push_instruction(int i){
 }
 
 int program::get_virtual(string n){
-    if(n=="print"){
+    //return standardlib::check(n);
+    if(n=="say"){
         return 0;
     }
     return -1;

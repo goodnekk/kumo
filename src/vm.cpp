@@ -3,14 +3,15 @@
 
 #include "vm.h"
 #include "instructions.h"
+#include "standardlib.h"
 
 void vm::load(vector< vector<int> > prg){
     LOG_DEBUG("VM Loaded program with: "<<prg.size()<<" functions.");
     program = prg;
     programPoint = 0;
     functionPoint = 0;
-    stackPoint = 0;
-    callstackPoint = 0;
+    //stackPoint = 0;
+    //callstackPoint = 0;
 }
 
 void vm::run(){
@@ -22,51 +23,51 @@ void vm::run(){
             case instructions::PUSH_C:
                 var = fetch();
                 LOG_DEBUG("PUSH_C: "<<var);
-                push_stack(var);
+                varstack.push(var);
                 break;
             case instructions::PUSH_R:
                 var = fetch();
                 LOG_DEBUG("PUSH_R: "<<var);
-                push_stack(get_ram(var));
+                varstack.push(get_ram(var));
                 break;
             case instructions::POP_R:
                 var = fetch();
                 LOG_DEBUG("POP_R: "<<var);
-                store_ram(var, pop_stack());
+                store_ram(var, varstack.pop());
                 break;
             case instructions::ADD:
                 LOG_DEBUG("ADD");
-                push_stack(pop_stack()+pop_stack());
+                varstack.push(varstack.pop()+varstack.pop());
                 break;
             case instructions::SUB:
                 LOG_DEBUG("SUB");
-                push_stack(pop_stack()-pop_stack());
+                varstack.push(varstack.pop()-varstack.pop());
                 break;
             case instructions::MULT:
                 LOG_DEBUG("MULT");
-                push_stack(pop_stack()*pop_stack());
+                varstack.push(varstack.pop()*varstack.pop());
                 break;
             case instructions::DIV:
                 LOG_DEBUG("DIV");
-                push_stack(pop_stack()/pop_stack());
+                varstack.push(varstack.pop()/varstack.pop());
                 break;
             case instructions::CALL:
-                var = pop_stack();
+                var = varstack.pop();
                 LOG_DEBUG("CALL "<< var);
-                push_callstack(programPoint);
-                push_callstack(functionPoint);
+                callstack.push(programPoint);
+                callstack.push(functionPoint);
                 functionPoint = var;
                 programPoint = 0;
                 break;
             case instructions::RETURN:
-                functionPoint = pop_callstack();
-                programPoint = pop_callstack();
+                functionPoint = callstack.pop();
+                programPoint = callstack.pop();
                 LOG_DEBUG("RETURN "<< functionPoint);
                 break;
             case instructions::V_CALL:
-                var = pop_stack();
+                var = varstack.pop();
                 LOG_DEBUG("V_CALL "<< var);
-                call_virtual(var);
+                standardlib::call(var, &varstack);
                 break;
             default:
                 LOG_ERROR("VM: Unknown instruction: "<< instruction);
@@ -80,6 +81,7 @@ int vm::fetch(){
     return a;
 }
 
+/*
 void vm::push_stack(int val){
     stack[stackPoint] = val;
     stackPoint++;
@@ -99,6 +101,7 @@ int vm::pop_callstack(){
     callstackPoint--;
     return callstack[callstackPoint];
 }
+*/
 
 void vm::store_ram(int reg, int val){
     ram[reg]=val;
@@ -106,14 +109,4 @@ void vm::store_ram(int reg, int val){
 
 int vm::get_ram(int reg){
     return ram[reg];
-}
-
-void vm::call_virtual(int n){
-    switch (n){
-        case 0:
-            LOG(pop_stack());
-            break;
-        default:
-        LOG_ERROR("VM: Unknown virtual function: "<< n);
-    }
 }

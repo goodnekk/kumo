@@ -1,7 +1,7 @@
 #python script runs tests
 import subprocess
 
-tests = [["variables","20"]]
+tests = [["variables","20"],["functions","8"]]
 
 for t in tests:
 
