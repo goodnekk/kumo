@@ -36,7 +36,7 @@ class parser{
 
         //terminals
         lexemes::node * number(int n);
-        lexemes::node * variable(int n);
+        lexemes::variable * variable(int n);
 
         //high level compare functions
         lexemes::name * name(int n);

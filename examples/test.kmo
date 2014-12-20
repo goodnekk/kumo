@@ -1,13 +1,4 @@
 add = (a,b){
-    c=a+b
-
-    d=a*c
+    print(a+b)
 }
-
-sub = (e,f){
-    e-f
-}
-
-sub(5,5)
-add(4,2)
-print(4)
+add(4,4)

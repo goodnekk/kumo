@@ -28,6 +28,8 @@ class vm {
         int get_ram(int reg);
         int fetch();
 
+        void call_virtual(int n);
+
     public:
         void load(vector< vector<int> > prg);
         void run();

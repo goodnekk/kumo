@@ -63,8 +63,10 @@ void vm::run(){
                 programPoint = pop_callstack();
                 LOG_DEBUG("RETURN "<< functionPoint);
                 break;
-            case instructions::PRINT:
-                LOG(pop_stack());
+            case instructions::V_CALL:
+                var = pop_stack();
+                LOG_DEBUG("V_CALL "<< var);
+                call_virtual(var);
                 break;
             default:
                 LOG_ERROR("VM: Unknown instruction: "<< instruction);
@@ -104,4 +106,14 @@ void vm::store_ram(int reg, int val){
 
 int vm::get_ram(int reg){
     return ram[reg];
+}
+
+void vm::call_virtual(int n){
+    switch (n){
+        case 0:
+            LOG(pop_stack());
+            break;
+        default:
+        LOG_ERROR("VM: Unknown virtual function: "<< n);
+    }
 }

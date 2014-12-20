@@ -13,8 +13,8 @@ namespace instructions{
     const static int MULT   =  5;
     const static int DIV    =  6;
 
-    //functions 
+    //functions
     const static int CALL  =   7;
     const static int RETURN  = 8;
-    const static int PRINT  =  9;
+    const static int V_CALL  = 9;
 }

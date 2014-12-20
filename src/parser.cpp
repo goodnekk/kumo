@@ -137,7 +137,7 @@ lexemes::node * parser::assignment(int n){
 lexemes::node * parser::call(int n){
     LOG_DEBUG("Parser: try call "<<n);
     //word(statement)
-    lexemes::node * a = variable(n);
+    lexemes::variable * a = variable(n);
     lexemes::node * b = c_operator(n+1,"(");
     if(a && b){
         lexemes::node * c = c_operator(n+2,")");
@@ -371,7 +371,7 @@ lexemes::node * parser::number(int n){
     return NULL;
 }
 
-lexemes::node * parser::variable(int n){
+lexemes::variable * parser::variable(int n){
     LOG_DEBUG("Parser: try variable "<<n);
     lexemes::node * b = name(n);
     if(b){

@@ -52,18 +52,29 @@ namespace lexemes{
     class variable: public node{
     public:
         string value;
+        bool is_virtual;
         variable(string v){
             length = 1;
             value = v;
+            is_virtual = false;
         };
         void eval(program * p){
-            p->push_instruction(instructions::PUSH_R);
-            int number = p->get_variable(value);
-            if(number==-1){
-                LOG_COMPILE_ERROR("Using '"<<value<<"' before assignment.");
-                STOP();
+
+            int number = p->get_virtual(value);
+            if(number>=0){
+                LOG_DEBUG("Using virtual name "<<value);
+                is_virtual = true;
+                p->push_instruction(instructions::PUSH_C);
+                p->push_instruction(number);//read register
+            } else {
+                number = p->get_variable(value);
+                if(number==-1){
+                    LOG_COMPILE_ERROR("Using '"<<value<<"' before assignment.");
+                    STOP();
+                }
+                p->push_instruction(instructions::PUSH_R);
+                p->push_instruction(number);//read register
             }
-            p->push_instruction(number);//read register
         };
     };
 
@@ -109,9 +120,9 @@ namespace lexemes{
     class call: public node{
     public:
         node * argument;
-        node * pointername;
+        variable * pointername;
 
-        call(node * n, node * a){
+        call(variable * n, node * a){
             argument = a;
             pointername = n;
 
@@ -126,7 +137,12 @@ namespace lexemes{
                 argument->eval(p);
             }
             pointername->eval(p);
-            p->push_instruction(instructions::CALL);
+            if(pointername->is_virtual){
+                p->push_instruction(instructions::V_CALL);
+            } else {
+                p->push_instruction(instructions::CALL);
+            }
+
             //p->push_instruction();
         };
     };
