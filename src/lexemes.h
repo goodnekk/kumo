@@ -137,6 +137,7 @@ namespace lexemes{
                 argument->eval(p);
             }
             pointername->eval(p);
+
             if(pointername->is_virtual){
                 p->push_instruction(instructions::V_CALL);
             } else {
@@ -185,26 +186,22 @@ namespace lexemes{
         void eval(program * p){
             //move to new function
             int pointer = p->new_function();
+            int scope = p->new_scope();
+
             if(arguments){
                 arguments->eval(p);
             }
             //create argument variables by poping values from the stack
-            //int firstargument = p->assign_variable(argument->value);
-            //p->push_instruction(instructions::POP_R);
-            //p->push_instruction(firstargument);
-
             //write function code statements
             stmnt->eval(p); //write the statements to the new block
             p->push_instruction(instructions::RETURN);
 
             //return to calling function
             p->pop_function();
-
+            p->pop_scope(scope);
             //push function pointer onto the stack
             p->push_instruction(instructions::PUSH_C);
             p->push_instruction(pointer);
-
-            //TODO:free the variables for scoping
         };
     };
 
@@ -218,7 +215,7 @@ namespace lexemes{
         void eval(program * p){
             for(int i=0; i<list.size(); i++){
                 p->push_instruction(instructions::POP_R);
-                int argument = p->assign_variable(list[i]->value);
+                int argument = p->force_variable(list[i]->value);
                 p->push_instruction(argument);
             }
         };

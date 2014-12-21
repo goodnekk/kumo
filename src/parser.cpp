@@ -87,24 +87,12 @@ lexemes::node * parser::statement(int n){
     //FIXME: call should be part of expression
     lexemes::node * a = call(n);
     if(a){
-        //if(c_endofline(n+(a->length))){
-            return a;
-        //} else {
-        //    LOG_COMPILE_ERROR("Expected end of line");
-        //    STOP();
-        //    return NULL;
-        //}
+        return a;
     }
     //assignment statement a = expression
     lexemes::node * b = assignment(n);
     if(b){
-        //if(c_endofline(n+(b->length))){
-            return b;
-        //} else {
-        //    LOG_COMPILE_ERROR("Expected end of line");
-        //    STOP();
-        //    return NULL;
-    //}
+        return b;
     }
 
     lexemes::node * c = expression(n);

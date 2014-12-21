@@ -17,8 +17,9 @@ int program::get_virtual(string n){
 }
 
 int program::get_variable(string n){
-    //just loop through varibles fuck hash tables
-    for(int i=0; i<variables.size(); i++){
+    //loop through variables backwards
+    //making sure the most local variable gets in first.
+    for(int i=variables.size()-1; i>=0; i--){
         if(n==variables[i]){
             return i;
         }
@@ -37,6 +38,23 @@ int program::assign_variable(string n){
     return i;
 }
 
+int program::force_variable(string n){
+    LOG_DEBUG("Fouce assigning new var "<<n);
+    variables.push_back(n);
+    return (variables.size()-1);
+}
+
+int program::new_scope(){
+    LOG_DEBUG("new scope");
+    return variables.size();
+}
+
+void program::pop_scope(int n){
+    LOG_DEBUG("end scope");
+    for(int i=variables.size()-1; i>=n; i--){
+        variables[i]="/"; //FIXME: this is just hackish
+    }
+}
 int program::new_function(){
     vector <int> v;
     list.push_back(v);

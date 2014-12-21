@@ -1,5 +1,6 @@
-add = (first,second){
-    say(first+second)
+a=5
+blaat = (b){
+    a=a+b
 }
-c = ask()
-add(4,c)
+blaat(10)
+say(a)
