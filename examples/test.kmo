@@ -1,4 +1,5 @@
-add = (a,b){
-    say(a+b)
+add = (first,second){
+    say(first+second)
 }
-add(4,4)
+c = ask()
+add(4,c)

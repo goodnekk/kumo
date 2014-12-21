@@ -1,4 +1,5 @@
 #include "program.h"
+#include "standardlibnames.h"
 
 program::program(){
     //create main function
@@ -12,11 +13,7 @@ void program::push_instruction(int i){
 }
 
 int program::get_virtual(string n){
-    //return standardlib::check(n);
-    if(n=="say"){
-        return 0;
-    }
-    return -1;
+    return standardlib::check(n);
 }
 
 int program::get_variable(string n){
