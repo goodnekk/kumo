@@ -52,29 +52,20 @@ namespace lexemes{
     class variable: public node{
     public:
         string value;
-        bool is_virtual;
+
         variable(string v){
             length = 1;
             value = v;
-            is_virtual = false;
         };
-        void eval(program * p){
 
-            int number = p->get_virtual(value);
-            if(number>=0){
-                LOG_DEBUG("Using virtual name "<<value);
-                is_virtual = true;
-                p->push_instruction(instructions::PUSH_C);
-                p->push_instruction(number);//read register
-            } else {
-                number = p->get_variable(value);
-                if(number==-1){
-                    LOG_COMPILE_ERROR("Using '"<<value<<"' before assignment.");
-                    STOP();
-                }
-                p->push_instruction(instructions::PUSH_R);
-                p->push_instruction(number);//read register
+        void eval(program * p){
+            int number = p->get_variable(value);
+            if(number==-1){
+                LOG_COMPILE_ERROR("Unknown variable '"<<value<<"', maybe it is used before asignment, or outside scope.");
+                STOP();
             }
+            p->push_instruction(instructions::PUSH_R);
+            p->push_instruction(number);//read register
         };
     };
 
@@ -137,14 +128,8 @@ namespace lexemes{
             if(argument){
                 argument->eval(p);
             }
-
             pointername->eval(p);
-
-            if(pointername->is_virtual){
-                p->push_instruction(instructions::V_CALL);
-            } else {
-                p->push_instruction(instructions::CALL);
-            }
+            p->push_instruction(instructions::CALL);
         };
     };
 
