@@ -14,6 +14,7 @@ private:
     program p;
     void standardfunctions();
     void ifstatement();
+    void whilestatement();
     void say();
     void virtual_function(string name, int virtualpointer);
 

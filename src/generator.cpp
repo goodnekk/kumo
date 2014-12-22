@@ -17,6 +17,7 @@ vector< vector<int> > generator::generate(lexemes::node * a){
 
 void generator::standardfunctions(){
     ifstatement();
+    whilestatement();
     virtual_function("say",0);
     virtual_function("ask",1);
 }
@@ -36,6 +37,27 @@ void generator::ifstatement(){
 
     //push function pointer from stack to hashtable
     int reg = p.assign_variable("if");
+    p.push_instruction(instructions::POP_R);
+    p.push_instruction(reg);
+}
+
+void generator::whilestatement(){
+    int pointer = p.new_function();
+    //write function code statements
+    p.push_instruction(instructions::ISTRUE);
+    p.push_instruction(instructions::CALL);
+     //call body
+    p.push_instruction(instructions::RETURN);
+
+    //return to calling function
+    p.pop_function();
+
+    //push function pointer onto the stack
+    p.push_instruction(instructions::PUSH_C);
+    p.push_instruction(pointer);
+
+    //push function pointer from stack to hashtable
+    int reg = p.assign_variable("while");
     p.push_instruction(instructions::POP_R);
     p.push_instruction(reg);
 }

@@ -2,7 +2,7 @@
 
 class stack{
     private:
-        int stackArray[10];
+        int stackArray[100];
         int stackPoint;
     public:
         stack();

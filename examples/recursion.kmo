@@ -1,0 +1,13 @@
+a = 10
+b = 1
+bar = 0
+foo = {
+    say(a)
+    a=a-1
+    if(a,{
+        b=0
+    })
+    if(b,bar)
+}
+bar = foo
+foo()
