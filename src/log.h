@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <stdlib.h>
-#define DebugMode 1
+#define DebugMode 0
 #if DebugMode
 #define LOG_DEBUG(string) std::cout<<string<<std::endl
 #else

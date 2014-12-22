@@ -1,6 +1,0 @@
-a=5
-blaat = (b){
-    a=a+b
-}
-blaat(10)
-say(a)

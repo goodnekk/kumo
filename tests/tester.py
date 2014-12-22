@@ -1,7 +1,7 @@
 #python script runs tests
 import subprocess
 
-tests = [["variables","20"],["functions","8"]]
+tests = [["variables","20"],["functions","8"],["scope","5"]]
 
 for t in tests:
 
@@ -13,3 +13,4 @@ for t in tests:
         if(not i=="> hello kumo 0.01"):
             if(i[2:]==t[1]):
                 print(t[0]+"...ok!")
+                break
