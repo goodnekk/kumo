@@ -1,0 +1,11 @@
+say = (message, answer, ignore){
+    if( message=="hello",
+        then = {answer("how are you?")},
+        else = {ignore("pfuh!")}
+    )
+}
+
+say(message = "hello",
+    answer = (answ){say("i'm fine thank you!")},
+    ignore = (answ){say("oh well...")}
+)

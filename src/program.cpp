@@ -39,7 +39,7 @@ int program::assign_variable(string n){
 }
 
 int program::force_variable(string n){
-    LOG_DEBUG("Fouce assigning new var "<<n);
+    LOG_DEBUG("Force assigning new var "<<n);
     variables.push_back(n);
     return (variables.size()-1);
 }

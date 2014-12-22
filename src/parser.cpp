@@ -26,25 +26,9 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
-//A program is a list of statements
-lexemes::node * parser::program(int n){
-    vector <lexemes::node*> p;
-
-    //continue until we have reached the end of the program
-    while(!c_endofprogram(n)){
-        lexemes::node * s = statement(n);
-        if(s){
-            p.push_back(s);
-            n+=(s->length)+1; //plus one for eol
-        } else {
-            return NULL;
-        }
-    }
-    return new lexemes::statementlist(p,n);
-}
-
 lexemes::node * parser::codeblock(int n){
     //statements and newlines
+    LOG_DEBUG("Parser: try codeblock "<<n);
     bool cont = true;
     vector<lexemes::node*> list;
     int firstn=n;
@@ -57,9 +41,16 @@ lexemes::node * parser::codeblock(int n){
             if(s){
                 n+=(a->length)+1;
             } else {
-                LOG_COMPILE_ERROR("Expected end of line");
-                STOP();
-                return NULL;
+                //end of block bracket
+                lexemes::node * brack = c_operator(n+(a->length),"}");
+                if(brack){
+                    n+=(a->length);
+                    cont = false;
+                } else{
+                    LOG_COMPILE_ERROR("Expected end of line");
+                    STOP();
+                    return NULL;
+                }
             }
         } else {
             //not a statement or empty line:
@@ -171,6 +162,12 @@ lexemes::node * parser::argumentlist(int n){
 //parenthesis, addsub, multdiv
 lexemes::node * parser::expression(int n){
     LOG_DEBUG("Parser: try expression "<<n);
+
+    lexemes::node * c = declaration(n);
+    if(c){
+        return c;
+    }
+
     lexemes::node * a = addsub(n);
     if(a){
         return a;
@@ -180,7 +177,6 @@ lexemes::node * parser::expression(int n){
     if(b){
         return b;
     }
-
     return NULL;
 }
 
@@ -296,28 +292,38 @@ lexemes::node * parser::operand(int n){
 lexemes::node * parser::declaration(int n){
     LOG_DEBUG("Parser: try declaration "<<n);
     //(arguments){ expression }
+    bool paren = false;
     lexemes::node * a = c_operator(n, "(");
     lexemes::node * b = nameslist(n+1);
 
+    int length = 0;
     if(a) {
-        int length = 0; //in case no arguments stated
         if(b){
             length = b->length;
         }
         lexemes::node * c = c_operator(n+1+(length), ")");
         if(c){
-            lexemes::node * d = c_operator(n+2+(length), "{");
-            if(d){
-                lexemes::node * e = codeblock(n+3+(length));
-                if(e){
-                    lexemes::node * f = c_operator(n+3+(e->length)+(length), "}");
-                    if(f){
-                        return new lexemes::declaration(b, e);
-                    } else {
-                        LOG_COMPILE_ERROR("expected }");
-                        STOP();
-                    }
-                }
+            length+=2;
+            paren = true;
+        } else {
+            LOG_COMPILE_ERROR("expected )");
+            STOP();
+        }
+    }
+
+    n+=length;
+
+    lexemes::node * d = c_operator(n, "{");
+    if(d){
+        lexemes::node * e = codeblock(n+1);
+        if(e){
+            lexemes::node * f = c_operator(n+1+(e->length), "}");
+            if(f){
+                LOG_DEBUG("Parser: found declaration");
+                return new lexemes::declaration(b, e, paren);
+            } else {
+                LOG_COMPILE_ERROR("expected }");
+                STOP();
             }
         }
     }

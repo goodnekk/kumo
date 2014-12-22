@@ -132,6 +132,7 @@ namespace lexemes{
                 length = 3;
             }
         };
+
         void eval(program * p){
             if(argument){
                 argument->eval(p);
@@ -157,7 +158,7 @@ namespace lexemes{
             for(int i=0; i<list.size(); i++){
                 length+=list[i]->length+1;
             }
-            length-=2;//remove last comma, and initial lenght of one
+            length-=2;//remove last comma, and initial length of one
         }
         void eval(program * p){
             //push the arguments on backwards
@@ -173,13 +174,15 @@ namespace lexemes{
         node * arguments;
         node * stmnt;
 
-        declaration(node * a, node * s){
+        declaration(node * a, node * s, bool paren){
             arguments = a;
             stmnt = s;
-            if (a){
-                length = 4+(a->length)+(s->length);
-            } else{
-                length = 4+(s->length);
+            length = 2+(s->length);
+            if(paren){ //add another two just if there are argument parenthesis
+                length +=2;
+                if (a){
+                    length +=(a->length);
+                }
             }
         };
 
@@ -210,7 +213,7 @@ namespace lexemes{
         vector<name*> list;
         nameslist(vector<name*> l){
             list = l;
-            length = (list.size()*2)-1;
+            length = (list.size()*2)-1; //(name, name, name) remove last comma
         };
         void eval(program * p){
             for(int i=0; i<list.size(); i++){

@@ -16,7 +16,6 @@ class parser{
         //recursive analysis
         //non terminals
         token getToken(int n);
-        lexemes::node * program(int n);
         lexemes::node * codeblock(int n);
         lexemes::node * statement(int n);
 

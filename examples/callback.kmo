@@ -1,0 +1,7 @@
+doThis = (callback){
+    callback()
+}
+
+doThis({
+    say(50)
+})
