@@ -137,6 +137,7 @@ namespace lexemes{
             if(argument){
                 argument->eval(p);
             }
+
             pointername->eval(p);
 
             if(pointername->is_virtual){
@@ -144,8 +145,6 @@ namespace lexemes{
             } else {
                 p->push_instruction(instructions::CALL);
             }
-
-            //p->push_instruction();
         };
     };
 

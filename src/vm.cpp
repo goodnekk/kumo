@@ -10,8 +10,6 @@ void vm::load(vector< vector<int> > prg){
     program = prg;
     programPoint = 0;
     functionPoint = 0;
-    //stackPoint = 0;
-    //callstackPoint = 0;
 }
 
 void vm::run(){
@@ -69,6 +67,14 @@ void vm::run(){
                 LOG_DEBUG("V_CALL "<< var);
                 standardlib::call(var, &varstack);
                 break;
+            case instructions::ISTRUE:
+                var = varstack.pop();
+                LOG_DEBUG("ISTRUE "<< var);
+                if(var!=1){
+                    varstack.pop(); //remove function pointer
+                    fetch();//skip next command;
+                }
+                break;
             default:
                 LOG_ERROR("VM: Unknown instruction: "<< instruction);
         }
@@ -80,28 +86,6 @@ int vm::fetch(){
     programPoint++;
     return a;
 }
-
-/*
-void vm::push_stack(int val){
-    stack[stackPoint] = val;
-    stackPoint++;
-}
-
-int vm::pop_stack(){
-    stackPoint--;
-    return stack[stackPoint];
-}
-
-void vm::push_callstack(int val){
-    callstack[callstackPoint] = val;
-    callstackPoint++;
-}
-
-int vm::pop_callstack(){
-    callstackPoint--;
-    return callstack[callstackPoint];
-}
-*/
 
 void vm::store_ram(int reg, int val){
     ram[reg]=val;
