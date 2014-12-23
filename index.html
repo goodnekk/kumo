@@ -20,12 +20,23 @@ html, body {
     padding-left: 1em;
 }
 
-#code{
+.code{
     padding:2em;
     background-color: #201D1D;
     color: #F2F2F2;
 }
 
+.var{
+    color: #83ABDB;
+}
+
+.func{
+    color: #8CC63E;
+}
+
+.num{
+    color: #E4E542;
+}
 
 
 </style>
@@ -35,10 +46,9 @@ html, body {
     <div id="container">
         <div>
             <h1>hello kumo <img src="little cloud.png" id="littlecloud"/></h1>
-            Kumo is a programming language and runtime-environment.<br><br>
+            Kumo is a runtime-environment and a neat little programming language.<br><br>
         </div>
         <div>
-
             <u>DOWNLOAD</u><br>
             <ul>
                 <li><a href="https://github.com/goodnekk/kumo/releases/download/v0.2/kumo02_win32.zip">windows</a></li>
@@ -46,6 +56,23 @@ html, body {
                 <li><strike>osx</strike></li>
             </ul>
             check out the source on the <a href="https://github.com/goodnekk/kumo">github page</a>
+            <br><br><br><br>
+        </div>
+        <div>
+            <u>ABOUT THE LANGUAGE</u><br><br>
+            Kumo is a language designed to make things happen.
+            Verbs are best for expressing actions, that is why in kumo allmost everything is a function.
+            Functions can be passed around as arguments:<br><br>
+            <div class="code">
+                <a class="var">a</a> = <a class="num">10</a><br><br>
+
+                <a class="func">subtract</a> = <a class="pa">{</a><br>
+                    &nbsp;&nbsp;<a class="var">a</a>=<a class="var">a</a>-<a class="num">1</a><br>
+                    &nbsp;&nbsp;<a class="func">say</a>(<a class="var">a</a>)<br>
+                <a class="pa">}</a><br><br>
+
+                <a class="func">while</a>(<a class="var">a</a>><a class="num">0</a>, <a class="func">subtract</a>)
+            </div>
 
         </div>
     </div>
