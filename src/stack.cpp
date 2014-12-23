@@ -5,6 +5,10 @@ stack::stack(){
 }
 
 void stack::push(variable val){
+    if(stackPoint==50){
+        LOG_ERROR("Stack overflow!");
+        STOP();
+    }
     stackArray[stackPoint] = val;
     stackPoint++;
 }

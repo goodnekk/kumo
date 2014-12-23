@@ -9,7 +9,6 @@ using namespace std;
 
 class program{
 private:
-
     int current_function;
     vector< vector<int> > list;
     vector<string> variables;

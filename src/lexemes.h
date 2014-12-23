@@ -130,6 +130,7 @@ namespace lexemes{
         void eval(program * p){
 
             int startpoint = p->get_position();
+
             if(argument){
                 argument->eval(p);
             }
@@ -207,6 +208,7 @@ namespace lexemes{
             p->pop_scope(scope);
             //push function pointer onto the stack
             p->push_instruction(instructions::PUSH_C);
+            pointer = p->push_constant(pointer);
             p->push_instruction(pointer);
         };
     };

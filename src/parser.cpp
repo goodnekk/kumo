@@ -305,9 +305,6 @@ lexemes::node * parser::declaration(int n){
         if(c){
             length+=2;
             paren = true;
-        } else {
-            LOG_COMPILE_ERROR("expected )");
-            STOP();
         }
     }
 

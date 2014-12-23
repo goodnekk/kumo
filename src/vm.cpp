@@ -25,6 +25,10 @@ void vm::run(){
                 LOG_DEBUG("PUSH_C: "<<var);
                 varstack.push(constant_pool.at(var));
                 break;
+            case instructions::POP: //FIXME: deprecated?
+                varstack.pop();
+                LOG_DEBUG("POP");
+                break;
             case instructions::PUSH_R:
                 var = fetch();
                 LOG_DEBUG("PUSH_R: "<<var);
@@ -71,15 +75,18 @@ void vm::run(){
                 break;
             case instructions::ISTRUE:
                 var = varstack.pop().get();
-                LOG_DEBUG("ISTRUE "<< var); //if not true goto
+                LOG_DEBUG("ISTRUE "<< var); //if not true move fwd by amount
                 if(var!=1){
-                    programPoint += fetch();//skip next command;
+                    varstack.pop(); //pop off potential link
+                    programPoint += fetch();//skip next commands;
+
                 } else {
                     fetch();
                 }
                 break;
             case instructions::GOTO:
                 programPoint = fetch();
+                LOG_DEBUG("GOTO "<< programPoint);
                 break;
             default:
                 LOG_ERROR("VM: Unknown instruction: "<< instruction);
@@ -89,6 +96,7 @@ void vm::run(){
 
 int vm::fetch(){
     int a = programObj[functionPoint][programPoint];
+    //LOG_DEBUG(functionPoint<<"::"<<programPoint<<"::"<<a);
     programPoint++;
     return a;
 }

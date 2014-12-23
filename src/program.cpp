@@ -12,10 +12,11 @@ void program::push_instruction(int i){
 }
 
 int program::get_position(){
-    return list[current_function].size()-1;
+    return list[current_function].size();
 }
 
 int program::push_constant(variable v){
+    LOG_DEBUG("New constant: "<<constant_pool.size()<<": "<<v.get());
     constant_pool.push_back(v);
     return (constant_pool.size()-1);
 }

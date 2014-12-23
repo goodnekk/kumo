@@ -1,9 +1,10 @@
+a=1000000
 b=1
-a=10
 while(b,{
     a=a-1
-    say(a)
     if(a,{
         b=0
     })
+
 })
+say(a)
