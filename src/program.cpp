@@ -11,6 +11,10 @@ void program::push_instruction(int i){
     list[current_function].push_back(i);
 }
 
+int program::get_position(){
+    return list[current_function].size()-1;
+}
+
 int program::get_variable(string n){
     //loop through variables backwards
     //making sure the most local variable gets in first.

@@ -125,11 +125,25 @@ namespace lexemes{
         };
 
         void eval(program * p){
+
+            int startpoint = p->get_position();
             if(argument){
                 argument->eval(p);
             }
-            pointername->eval(p);
-            p->push_instruction(instructions::CALL);
+            if(pointername->value == "if"){
+                p->push_instruction(instructions::ISTRUE); //0
+                p->push_instruction(1);                    //1
+                p->push_instruction(instructions::CALL);   //2
+            } else if(pointername->value == "while"){
+                p->push_instruction(instructions::ISTRUE); //0
+                p->push_instruction(3);                    //1
+                p->push_instruction(instructions::CALL);   //2
+                p->push_instruction(instructions::GOTO);
+                p->push_instruction(startpoint);
+            } else {
+                pointername->eval(p);
+                p->push_instruction(instructions::CALL);
+            }
         };
     };
 

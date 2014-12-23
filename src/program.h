@@ -17,6 +17,7 @@ private:
 public:
     program();
     void push_instruction(int i);
+    int get_position();
 
     int get_variable(string n);
     int assign_variable(string n);

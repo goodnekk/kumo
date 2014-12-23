@@ -11,7 +11,7 @@ class vm {
         stack varstack;
         stack callstack;
 
-        int ram[10]; //random acces storage for local variables
+        int ram[100]; //random acces storage for variables
 
         vector< vector<int> > program;
         int programPoint; //points to the current operation

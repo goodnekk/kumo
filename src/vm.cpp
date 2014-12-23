@@ -62,6 +62,11 @@ void vm::run(){
                 programPoint = callstack.pop();
                 LOG_DEBUG("RETURN "<< functionPoint);
                 break;
+            case instructions::RETURNTO: //return and call the same instruction
+                functionPoint = callstack.pop();
+                programPoint = callstack.pop()-7;
+                LOG_DEBUG("RETURNTO "<< functionPoint);
+                break;
             case instructions::V_CALL:
                 var = varstack.pop();
                 LOG_DEBUG("V_CALL "<< var);
@@ -69,11 +74,15 @@ void vm::run(){
                 break;
             case instructions::ISTRUE:
                 var = varstack.pop();
-                LOG_DEBUG("ISTRUE "<< var);
+                LOG_DEBUG("ISTRUE "<< var); //if not true goto
                 if(var!=1){
-                    varstack.pop(); //remove function pointer
-                    fetch();//skip next command;
+                    programPoint += fetch();//skip next command;
+                } else {
+                    fetch();
                 }
+                break;
+            case instructions::GOTO:
+                programPoint = fetch();
                 break;
             default:
                 LOG_ERROR("VM: Unknown instruction: "<< instruction);

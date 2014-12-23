@@ -13,9 +13,6 @@ private:
     //vector<int> program; //this will contain the program
     program p;
     void standardfunctions();
-    void ifstatement();
-    void whilestatement();
-    void say();
     void virtual_function(string name, int virtualpointer);
 
 public:
