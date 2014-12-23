@@ -16,5 +16,5 @@ private:
     void virtual_function(string name, int virtualpointer);
 
 public:
-    vector< vector<int> > generate(lexemes::node * a);
+    program generate(lexemes::node * a);
 };

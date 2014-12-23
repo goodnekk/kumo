@@ -15,6 +15,11 @@ int program::get_position(){
     return list[current_function].size()-1;
 }
 
+int program::push_constant(variable v){
+    constant_pool.push_back(v);
+    return (constant_pool.size()-1);
+}
+
 int program::get_variable(string n){
     //loop through variables backwards
     //making sure the most local variable gets in first.
@@ -69,4 +74,8 @@ void program::pop_function(){
 
 vector< vector<int> > program::get_list(){
     return list;
+}
+
+vector<variable> program::get_constants(){
+    return constant_pool;
 }

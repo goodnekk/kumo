@@ -1,0 +1,7 @@
+startAt = (x){
+    (y){say(x+y)}
+}
+b = startAt(5)
+c = startAt(10)
+b(5)
+c(5)

@@ -8,11 +8,11 @@
 #include "generator.h"
 #include "instructions.h"
 
-vector< vector<int> > generator::generate(lexemes::node * a){
+program generator::generate(lexemes::node * a){
     LOG_DEBUG("Generator: started");
     standardfunctions();
     a->eval(&p);
-    return p.get_list();
+    return p;
 }
 
 void generator::standardfunctions(){
@@ -23,7 +23,8 @@ void generator::standardfunctions(){
 }
 
 void generator::virtual_function(string name, int virtualpointer){
-    int pointer = p.new_function();
+    int pointer = p.push_constant(p.new_function());
+    virtualpointer = p.push_constant(virtualpointer);
     //write function code statements
     p.push_instruction(instructions::PUSH_C);
     p.push_instruction(virtualpointer);

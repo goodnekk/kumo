@@ -5,23 +5,25 @@
 #include "instructions.h"
 #include "standardlib.h"
 
-void vm::load(vector< vector<int> > prg){
-    LOG_DEBUG("VM Loaded program with: "<<prg.size()<<" functions.");
-    program = prg;
+void vm::load(program prg){
+    programObj = prg.get_list();
+    constant_pool = prg.get_constants();
+
     programPoint = 0;
     functionPoint = 0;
+    LOG_DEBUG("VM Loaded program with: "<<programObj.size()<<" functions.");
 }
 
 void vm::run(){
     //loop through each operation untill the end of the program is reached
-    while(programPoint<program[functionPoint].size()){
+    while(programPoint<programObj[functionPoint].size()){
         int instruction = fetch();
         int var = 0;
         switch(instruction){
             case instructions::PUSH_C:
                 var = fetch();
                 LOG_DEBUG("PUSH_C: "<<var);
-                varstack.push(var);
+                varstack.push(constant_pool.at(var));
                 break;
             case instructions::PUSH_R:
                 var = fetch();
@@ -35,45 +37,40 @@ void vm::run(){
                 break;
             case instructions::ADD:
                 LOG_DEBUG("ADD");
-                varstack.push(varstack.pop()+varstack.pop());
+                varstack.push(variable(varstack.pop().get()+varstack.pop().get()));
                 break;
             case instructions::SUB:
                 LOG_DEBUG("SUB");
-                varstack.push(varstack.pop()-varstack.pop());
+                varstack.push(variable(varstack.pop().get()-varstack.pop().get()));
                 break;
             case instructions::MULT:
                 LOG_DEBUG("MULT");
-                varstack.push(varstack.pop()*varstack.pop());
+                varstack.push(variable(varstack.pop().get()*varstack.pop().get()));
                 break;
             case instructions::DIV:
                 LOG_DEBUG("DIV");
-                varstack.push(varstack.pop()/varstack.pop());
+                varstack.push(variable(varstack.pop().get()/varstack.pop().get()));
                 break;
             case instructions::CALL:
-                var = varstack.pop();
+                var = varstack.pop().get();
                 LOG_DEBUG("CALL "<< var);
-                callstack.push(programPoint);
-                callstack.push(functionPoint);
+                callstack.push(variable(programPoint));
+                callstack.push(variable(functionPoint));
                 functionPoint = var;
                 programPoint = 0;
                 break;
             case instructions::RETURN:
-                functionPoint = callstack.pop();
-                programPoint = callstack.pop();
+                functionPoint = callstack.pop().get();
+                programPoint = callstack.pop().get();
                 LOG_DEBUG("RETURN "<< functionPoint);
                 break;
-            case instructions::RETURNTO: //return and call the same instruction
-                functionPoint = callstack.pop();
-                programPoint = callstack.pop()-7;
-                LOG_DEBUG("RETURNTO "<< functionPoint);
-                break;
             case instructions::V_CALL:
-                var = varstack.pop();
+                var = varstack.pop().get();
                 LOG_DEBUG("V_CALL "<< var);
                 standardlib::call(var, &varstack);
                 break;
             case instructions::ISTRUE:
-                var = varstack.pop();
+                var = varstack.pop().get();
                 LOG_DEBUG("ISTRUE "<< var); //if not true goto
                 if(var!=1){
                     programPoint += fetch();//skip next command;
@@ -91,15 +88,15 @@ void vm::run(){
 }
 
 int vm::fetch(){
-    int a = program[functionPoint][programPoint];
+    int a = programObj[functionPoint][programPoint];
     programPoint++;
     return a;
 }
 
-void vm::store_ram(int reg, int val){
-    ram[reg]=val;
+void vm::store_ram(variable reg, variable val){
+    ram[reg.get()]=val;
 }
 
-int vm::get_ram(int reg){
-    return ram[reg];
+variable vm::get_ram(variable reg){
+    return ram[reg.get()];
 }

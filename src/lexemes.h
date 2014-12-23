@@ -4,9 +4,11 @@
 
 #include <vector>
 #include <iostream>
+#include "log.h"
+
 #include "instructions.h"
 #include "program.h"
-#include "log.h"
+#include "variable.h"
 
 using namespace std;
 namespace lexemes{
@@ -34,8 +36,9 @@ namespace lexemes{
             convert >> value;
         };
         void eval(program * p){
+            int index = p->push_constant(variable(value));
             p->push_instruction(instructions::PUSH_C);
-            p->push_instruction(value);
+            p->push_instruction(index);
         };
     };
 
@@ -140,6 +143,8 @@ namespace lexemes{
                 p->push_instruction(instructions::CALL);   //2
                 p->push_instruction(instructions::GOTO);
                 p->push_instruction(startpoint);
+            } else if(pointername->value == "return"){
+                p->push_instruction(instructions::RETURN);
             } else {
                 pointername->eval(p);
                 p->push_instruction(instructions::CALL);

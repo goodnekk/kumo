@@ -1,11 +1,12 @@
 #pragma once
+#include "variable.h"
 
 class stack{
     private:
-        int stackArray[100];
+        variable stackArray[50];
         int stackPoint;
     public:
         stack();
-        void push(int val);
-        int pop();
+        void push(variable val);
+        variable pop();
 };

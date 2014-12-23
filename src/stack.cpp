@@ -4,12 +4,12 @@ stack::stack(){
     stackPoint = 0;
 }
 
-void stack::push(int val){
+void stack::push(variable val){
     stackArray[stackPoint] = val;
     stackPoint++;
 }
 
-int stack::pop(){
+variable stack::pop(){
     stackPoint--;
     return stackArray[stackPoint];
 }

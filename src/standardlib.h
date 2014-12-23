@@ -3,20 +3,21 @@
 #include <string>
 #include "log.h"
 #include "stack.h"
+#include "variable.h"
 
 using namespace std;
 
 namespace standardlib{
 
     void say(stack * s){
-        cout<<"> "<<s->pop()<<endl;
+        cout<<"> "<<s->pop().get()<<endl;
     };
 
     void ask(stack * s){
         cout<<"> ";
         int val;
         cin >> val;
-        s->push(val);
+        s->push(variable(val));
         cout<<endl;
     };
 

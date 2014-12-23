@@ -18,10 +18,9 @@ namespace instructions {
     //functions
     const static int CALL    =  7;
     const static int RETURN  =  8;
-    const static int RETURNTO=  9;
-    const static int V_CALL  =  10;
+    const static int V_CALL  =  9;
 
     //logic
-    const static int ISTRUE  =  11;
-    const static int GOTO    =  12;
+    const static int ISTRUE  =  10;
+    const static int GOTO    =  11;
 }
