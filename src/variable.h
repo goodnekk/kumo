@@ -17,4 +17,6 @@ public:
     variable(bool n);
     variable(string n);
     int get();
+    string get_text();
+    int get_type();
 };

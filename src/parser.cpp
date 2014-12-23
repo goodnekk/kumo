@@ -157,10 +157,21 @@ lexemes::node * parser::argumentlist(int n){
     return new lexemes::argumentlist(list);
 }
 
+lexemes::node * parser::expression(int n){
+    lexemes::node * a = mathexpression(n);
+    if(a){
+        return a;
+    }
+    lexemes::node * b = textexpression(n);
+    if(b){
+        return b;
+    }
+    return NULL;
+}
 //an expression: math 1+2*3
 //operator precedence is:
 //parenthesis, addsub, multdiv
-lexemes::node * parser::expression(int n){
+lexemes::node * parser::mathexpression(int n){
     LOG_DEBUG("Parser: try expression "<<n);
 
     lexemes::node * c = declaration(n);
@@ -288,6 +299,14 @@ lexemes::node * parser::operand(int n){
     return NULL;
 }
 
+lexemes::node * parser::textexpression(int n){
+    lexemes::node * a = text(n);
+    if(a){
+        return a;
+    }
+    return NULL;
+}
+
 //function declaration
 lexemes::node * parser::declaration(int n){
     LOG_DEBUG("Parser: try declaration "<<n);
@@ -358,6 +377,14 @@ lexemes::node * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);
     if (c_type(n,tokentypes::NUMBER)) {
         return new lexemes::number(getToken(n).tokenstring);
+    }
+    return NULL;
+}
+
+lexemes::node * parser::text(int n){
+    LOG_DEBUG("Parser: try string "<<n);
+    if (c_type(n,tokentypes::STRING)) {
+        return new lexemes::text(getToken(n).tokenstring);
     }
     return NULL;
 }

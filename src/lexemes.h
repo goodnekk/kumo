@@ -42,6 +42,21 @@ namespace lexemes{
         };
     };
 
+    //string, just the text bitween quotes
+    class text: public node {
+    public:
+        string value;
+        text(string v){
+            length = 1;
+            value = v;
+        };
+        void eval(program * p){
+            int index = p->push_constant(variable(value));
+            p->push_instruction(instructions::PUSH_C);
+            p->push_instruction(index);
+        };
+    };
+
     //name, contains name string
     class name: public node{
     public:

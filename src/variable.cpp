@@ -26,3 +26,11 @@ variable::variable(string n){
 int variable::get(){
     return number;
 }
+
+string variable::get_text(){
+    return text;
+}
+
+int variable::get_type(){
+    return type;
+}

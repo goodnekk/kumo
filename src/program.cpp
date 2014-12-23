@@ -16,7 +16,7 @@ int program::get_position(){
 }
 
 int program::push_constant(variable v){
-    LOG_DEBUG("New constant: "<<constant_pool.size()<<": "<<v.get());
+    //LOG_DEBUG("New constant: "<<constant_pool.size()<<": "<<v.get());
     constant_pool.push_back(v);
     return (constant_pool.size()-1);
 }

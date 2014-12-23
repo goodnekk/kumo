@@ -10,7 +10,15 @@ using namespace std;
 namespace standardlib{
 
     void say(stack * s){
-        cout<<"> "<<s->pop().get()<<endl;
+        variable v = s->pop();
+        switch(v.get_type()){
+            case 1:
+                cout<<"> "<<v.get()<<endl;
+                break;
+            case 3:
+                cout<<"> "<<v.get_text()<<endl;
+                break;
+        }
     };
 
     void ask(stack * s){
