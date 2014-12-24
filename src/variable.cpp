@@ -24,7 +24,10 @@ variable::variable(string n){
 }
 
 int variable::get(){
-    return number;
+    if (type == 1){
+        return number;
+    }
+    LOG_ERROR("Variable not of type number");
 }
 
 string variable::get_text(){

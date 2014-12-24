@@ -77,10 +77,12 @@ void vm::run(){
                 var = varstack.pop().get();
                 LOG_DEBUG("ISTRUE "<< var); //if not true move fwd by amount
                 if(var!=1){
+                    LOG_DEBUG("False");
                     varstack.pop(); //pop off potential link
                     programPoint += fetch();//skip next commands;
 
                 } else {
+                    LOG_DEBUG("True");
                     fetch();
                 }
                 break;
