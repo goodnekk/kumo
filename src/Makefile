@@ -1,34 +1,35 @@
 objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/stack.o $(bin)/vm.o $(bin)/generator.o $(bin)/variable.o
 
 bin = ../bin
+flags = -g
 
 $(bin)/kumo: $(objects)
-	g++ $(objects) -o $(bin)/kumo
+	g++ $(objects) $(flags) -o $(bin)/kumo
 	$(bin)/kumo ../examples/test.kmo
 
 $(bin)/main.o: main.cpp
-	g++ -c main.cpp -o $(bin)/main.o
+	g++ -c main.cpp $(flags) -o $(bin)/main.o
 
 $(bin)/lexer.o: lexer.cpp
-	g++ -c lexer.cpp -o $(bin)/lexer.o
+	g++ -c lexer.cpp $(flags) -o $(bin)/lexer.o
 
 $(bin)/token.o: token.cpp
-	g++ -c token.cpp -o $(bin)/token.o
+	g++ -c token.cpp $(flags) -o $(bin)/token.o
 
 $(bin)/program.o: program.cpp
-	g++ -c program.cpp -o $(bin)/program.o
+	g++ -c program.cpp $(flags) -o $(bin)/program.o
 
 $(bin)/parser.o: parser.cpp
-	g++ -c parser.cpp -o $(bin)/parser.o
+	g++ -c parser.cpp $(flags) -o $(bin)/parser.o
 
 $(bin)/vm.o: vm.cpp
-	g++ -c vm.cpp -o $(bin)/vm.o
+	g++ -c vm.cpp $(flags) -o $(bin)/vm.o
 
 $(bin)/stack.o: stack.cpp
-	g++ -c stack.cpp -o $(bin)/stack.o
+	g++ -c stack.cpp $(flags) -o $(bin)/stack.o
 
 $(bin)/generator.o: generator.cpp
-	g++ -c generator.cpp -o $(bin)/generator.o
+	g++ -c generator.cpp $(flags) -o $(bin)/generator.o
 
 $(bin)/variable.o: variable.cpp
-	g++ -c variable.cpp -o $(bin)/variable.o
+	g++ -c variable.cpp $(flags) -o $(bin)/variable.o
