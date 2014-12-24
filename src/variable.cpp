@@ -27,11 +27,16 @@ int variable::get(){
     if (type == 1){
         return number;
     }
-    LOG_ERROR("Variable not of type number");
+    LOG_ERROR("Variable not of type number: "<<type);
+    STOP();
 }
 
 string variable::get_text(){
-    return text;
+    if (type == 3){
+        return text;
+    }
+    LOG_ERROR("Variable not of type text: "<<type);
+    STOP();
 }
 
 int variable::get_type(){
