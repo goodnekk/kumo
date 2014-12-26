@@ -29,8 +29,8 @@ bool lexer::isWhitespace(string c){
 }
 
 bool lexer::isOperator(string c){
-	const static string operators[10] = {"+","-","*","/","(",")","{","}","=",","};
-	for(int i=0; i<10; i++){
+	const static string operators[12] = {"+","-","*","/","(",")","{","}","=",",","<",">"};
+	for(int i=0; i<12; i++){
 		if (c==operators[i]){
 			return true;
 		}

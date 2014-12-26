@@ -1,5 +1,3 @@
-a=1
-if(a,{
-    say(a)
+if(5<55,{
+    say("equals")
 })
-say(10)

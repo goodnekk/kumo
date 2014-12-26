@@ -16,12 +16,17 @@ namespace instructions {
     const static int MULT    =  6;
     const static int DIV     =  7;
 
-    //functions
-    const static int CALL    =  8;
-    const static int RETURN  =  9;
-    const static int V_CALL  =  10;
+    //boolean
+    const static int ISEQ    =  8;
+    const static int ISHI    =  9;
+    const static int ISLO    = 10;
 
-    //logic
-    const static int ISTRUE  =  11;
-    const static int GOTO    =  12;
+    //functions
+    const static int CALL    = 11;
+    const static int RETURN  = 12;
+    const static int V_CALL  = 13;
+
+    //flow control
+    const static int ISTRUE  = 14;
+    const static int GOTO    = 15;
 }

@@ -55,6 +55,30 @@ void vm::run(){
                 LOG_DEBUG("DIV");
                 varstack.push(variable(varstack.pop().get()/varstack.pop().get()));
                 break;
+            case instructions::ISEQ:
+                LOG_DEBUG("ISEQ");
+                if(varstack.pop().get()==varstack.pop().get()){
+                    varstack.push(variable(true));
+                } else {
+                    varstack.push(variable(false));
+                }
+                break;
+            case instructions::ISHI:
+                LOG_DEBUG("ISLO");
+                if(varstack.pop().get()>varstack.pop().get()){
+                    varstack.push(variable(true));
+                } else {
+                    varstack.push(variable(false));
+                }
+                break;
+            case instructions::ISLO:
+                LOG_DEBUG("ISLO");
+                if(varstack.pop().get()<varstack.pop().get()){
+                    varstack.push(variable(true));
+                } else {
+                    varstack.push(variable(false));
+                }
+                break;
             case instructions::CALL:
                 var = varstack.pop().get();
                 LOG_DEBUG("CALL "<< var);
@@ -74,13 +98,11 @@ void vm::run(){
                 standardlib::call(var, &varstack);
                 break;
             case instructions::ISTRUE:
-                var = varstack.pop().get();
-                LOG_DEBUG("ISTRUE "<< var); //if not true move fwd by amount
-                if(var!=1){
+                LOG_DEBUG("ISTRUE"); //if not true move fwd by amount
+                if(!varstack.pop().get_boolean()){
                     LOG_DEBUG("False");
                     varstack.pop(); //pop off potential link
                     programPoint += fetch();//skip next commands;
-
                 } else {
                     LOG_DEBUG("True");
                     fetch();

@@ -19,5 +19,7 @@ public:
     variable(string n);
     int get();
     string get_text();
+    bool get_boolean();
+
     int get_type();
 };

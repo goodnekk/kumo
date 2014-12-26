@@ -39,6 +39,14 @@ string variable::get_text(){
     STOP();
 }
 
+bool variable::get_boolean(){
+    if (type == 2){
+        return boolean;
+    }
+    LOG_ERROR("Variable not of type boolean: "<<type);
+    STOP();
+}
+
 int variable::get_type(){
     return type;
 }

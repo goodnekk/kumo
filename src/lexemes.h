@@ -223,8 +223,8 @@ namespace lexemes{
             p->pop_scope(scope);
             //push function pointer onto the stack
             p->push_instruction(instructions::PUSH_C);
-            pointer = p->push_constant(pointer);
-            p->push_instruction(pointer);
+            int constantpointer = p->push_constant(pointer);
+            p->push_instruction(constantpointer);
         };
     };
 
@@ -244,6 +244,35 @@ namespace lexemes{
         };
     };
 
+    class boolean: public node{
+    public:
+        node * r;
+        node * l;
+        int code;
+        boolean(node * left, node * right, string op){
+            l = left;
+            r = right;
+            length = (l->length)+(r->length);
+            if(op=="=="){
+                code = instructions::ISEQ;
+                length+=2;
+            } else if(op==">"){
+                code = instructions::ISHI;
+                length+=1;
+            } else if(op=="<"){
+                code = instructions::ISLO;
+                length+=1;
+            } else {
+                code = 0;
+                LOG_DEBUG("PARSER ERROR: invalid boolean expression: "<<op);
+            }
+        };
+        void eval(program * p){
+            r->eval(p);
+            l->eval(p);
+            p->push_instruction(code);
+        }
+    };
     //arithmatic, evaluates a simple mathmatical statement
     //first evaluates it's children
     class arithmetic: public node {

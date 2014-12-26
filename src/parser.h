@@ -32,6 +32,7 @@ class parser{
                 lexemes::node * operand(int n);
 
             lexemes::node * textexpression(int n);
+            lexemes::node * booleanexpression(int n);
 
             lexemes::node * declaration(int n);
             lexemes::node * nameslist(int n);

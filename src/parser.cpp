@@ -144,9 +144,9 @@ lexemes::node * parser::argumentlist(int n){
         if(a){
             //push onto list
             list.push_back(a);
-            lexemes::node * s = c_operator(n+1, ",");
+            lexemes::node * s = c_operator(n+(a->length), ",");
             if(s){
-                n=n+2;
+                n=n+1+(a->length);
             } else {
                 cont = false;
             }
@@ -158,6 +158,11 @@ lexemes::node * parser::argumentlist(int n){
 }
 
 lexemes::node * parser::expression(int n){
+    lexemes::node * c = booleanexpression(n);
+    if(c){
+        return c;
+    }
+
     lexemes::node * a = mathexpression(n);
     if(a){
         return a;
@@ -300,9 +305,42 @@ lexemes::node * parser::operand(int n){
 }
 
 lexemes::node * parser::textexpression(int n){
+    LOG_DEBUG("Parser: try text expression "<<n);
     lexemes::node * a = text(n);
     if(a){
         return a;
+    }
+    return NULL;
+}
+
+lexemes::node * parser::booleanexpression(int n){
+    LOG_DEBUG("Parser: try boolean expression "<<n);
+    lexemes::node * a = operand(n);
+    if(a){
+        lexemes::node * b = c_operator(n+1,"=");
+        lexemes::node * c = c_operator(n+2,"=");
+        if(b&&c){
+            lexemes::node * d = operand(n+2+(a->length));
+            if(d){
+                return new lexemes::boolean(a,d,"==");
+            }
+        }
+
+        b = c_operator(n+1,">");
+        if(b){
+            lexemes::node * d = operand(n+1+(a->length));
+            if(d){
+                return new lexemes::boolean(a,d,">");
+            }
+        }
+        
+        b = c_operator(n+1,"<");
+        if(b){
+            lexemes::node * d = operand(n+1+(a->length));
+            if(d){
+                return new lexemes::boolean(a,d,"<");
+            }
+        }
     }
     return NULL;
 }
