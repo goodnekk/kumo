@@ -3,3 +3,8 @@ while(a<10,{
     a=a+1
     say(a)
 })
+
+while(a>0,{
+    a=a-1
+    say(a)
+})

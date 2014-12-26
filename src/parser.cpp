@@ -315,6 +315,17 @@ lexemes::node * parser::textexpression(int n){
 
 lexemes::node * parser::booleanexpression(int n){
     LOG_DEBUG("Parser: try boolean expression "<<n);
+
+    lexemes::name * e = name(n);
+    if(e){
+        if(e->value=="true"){
+            return new lexemes::boolean(true);
+        }
+        if(e->value=="false"){
+            return new lexemes::boolean(false);
+        }
+    }
+
     lexemes::node * a = operand(n);
     if(a){
         lexemes::node * b = c_operator(n+1,"=");
@@ -322,7 +333,7 @@ lexemes::node * parser::booleanexpression(int n){
         if(b&&c){
             lexemes::node * d = operand(n+2+(a->length));
             if(d){
-                return new lexemes::boolean(a,d,"==");
+                return new lexemes::booleanexpression(a,d,"==");
             }
         }
 
@@ -330,15 +341,15 @@ lexemes::node * parser::booleanexpression(int n){
         if(b){
             lexemes::node * d = operand(n+1+(a->length));
             if(d){
-                return new lexemes::boolean(a,d,">");
+                return new lexemes::booleanexpression(a,d,">");
             }
         }
-        
+
         b = c_operator(n+1,"<");
         if(b){
             lexemes::node * d = operand(n+1+(a->length));
             if(d){
-                return new lexemes::boolean(a,d,"<");
+                return new lexemes::booleanexpression(a,d,"<");
             }
         }
     }

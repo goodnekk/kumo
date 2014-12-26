@@ -57,6 +57,19 @@ namespace lexemes{
         };
     };
 
+    class boolean: public node{
+    public:
+        bool value;
+        boolean(bool v){
+            value = v;
+        };
+        void eval(program * p){
+            int index = p->push_constant(variable(value));
+            p->push_instruction(instructions::PUSH_C);
+            p->push_instruction(index);
+        };
+    };
+
     //name, contains name string
     class name: public node{
     public:
@@ -244,12 +257,12 @@ namespace lexemes{
         };
     };
 
-    class boolean: public node{
+    class booleanexpression: public node{
     public:
         node * r;
         node * l;
         int code;
-        boolean(node * left, node * right, string op){
+        booleanexpression(node * left, node * right, string op){
             l = left;
             r = right;
             length = (l->length)+(r->length);
@@ -273,6 +286,7 @@ namespace lexemes{
             p->push_instruction(code);
         }
     };
+
     //arithmatic, evaluates a simple mathmatical statement
     //first evaluates it's children
     class arithmetic: public node {

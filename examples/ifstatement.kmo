@@ -1,3 +1,7 @@
-if(5<55,{
-    say("equals")
+if(true,{
+    say("true")
+})
+
+if(false,{
+    say("false")
 })
