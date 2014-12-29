@@ -1,8 +1,8 @@
 #include "log.h"
 #include "lexer.h"
-#include "parser.h"
-#include "generator.h"
-#include "vm.h"
+#include "n_parser.h"
+//#include "generator.h"
+//#include "vm.h"
 
 #include <string>
 #include <sstream>
@@ -27,12 +27,13 @@ int main(int argc, char* argv[]) {
 	//start compilation
 	lexer l;
 	parser p;
-	generator g;
-	vm v;
+	//generator g;
+	// /vm v;
 
 	l.lex(program); //should be 5
-	v.load(g.generate(p.parse(l.getTokens())));
-	v.run();
+	p.parse(l.getTokens());
+	//v.load(g.generate(p.parse(l.getTokens())));
+	//v.run();
 
 	return 0;
 }

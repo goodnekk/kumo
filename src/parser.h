@@ -1,7 +1,9 @@
 #pragma once
 #include "token.h"
 #include "tokentypes.h"
-#include "lexemes.h"
+
+#include "parsenode.h"
+#include "lexemetypes.h"
 
 #include "log.h"
 #include <vector>
@@ -16,40 +18,40 @@ class parser{
         //recursive analysis
         //non terminals
         token getToken(int n);
-        lexemes::node * codeblock(int n);
-        lexemes::node * statement(int n);
+        parsenode * codeblock(int n);
+        parsenode * statement(int n);
 
-            lexemes::node * assignment(int n);
+            parsenode * assignment(int n);
 
-            lexemes::node * call(int n);
-            lexemes::node * argumentlist(int n);
+            parsenode * call(int n);
+            parsenode * argumentlist(int n);
 
-            lexemes::node * expression(int n);
-            lexemes::node * mathexpression(int n);
-                lexemes::node * addsub(int n);
-                lexemes::node * multdiv(int n);
-                lexemes::node * parenthesized(int n);
-                lexemes::node * operand(int n);
+            parsenode * expression(int n);
+            parsenode * mathexpression(int n);
+                parsenode * addsub(int n);
+                parsenode * multdiv(int n);
+                parsenode * parenthesized(int n);
+                parsenode * operand(int n);
 
-            lexemes::node * textexpression(int n);
-            lexemes::node * booleanexpression(int n);
+            parsenode * textexpression(int n);
+            parsenode * booleanexpression(int n);
 
-            lexemes::node * declaration(int n);
-            lexemes::node * nameslist(int n);
+            parsenode * declaration(int n);
+            parsenode * nameslist(int n);
 
         //terminals
-        lexemes::node * text(int n);
-        lexemes::node * number(int n);
-        lexemes::variable * variable(int n);
+        parsenode * text(int n);
+        parsenode * number(int n);
+        parsenode * variable(int n);
 
         //high level compare functions
-        lexemes::name * name(int n);
-        lexemes::node * c_operator(int n, string w);
+        parsenode * name(int n);
+        parsenode * c_operator(int n, string w);
         //low level compare functions
         bool c_type(int n, int t);
         bool c_string(int n,string w);
         bool c_endofline(int n);
         bool c_endofprogram(int n);
     public:
-        lexemes::node * parse(vector<token> list);
+        parsenode * parse(vector<token> list);
 };

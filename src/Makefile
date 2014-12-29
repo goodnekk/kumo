@@ -1,7 +1,7 @@
 objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/stack.o $(bin)/vm.o $(bin)/generator.o $(bin)/variable.o
 
 bin = ../bin
-flags = -g
+flags = -g -std=c++11
 
 $(bin)/kumo: $(objects)
 	g++ $(objects) $(flags) -o $(bin)/kumo
@@ -19,8 +19,8 @@ $(bin)/token.o: token.cpp
 $(bin)/program.o: program.cpp
 	g++ -c program.cpp $(flags) -o $(bin)/program.o
 
-$(bin)/parser.o: parser.cpp
-	g++ -c parser.cpp $(flags) -o $(bin)/parser.o
+$(bin)/parser.o: n_parser.cpp
+	g++ -c n_parser.cpp $(flags) -o $(bin)/parser.o
 
 $(bin)/vm.o: vm.cpp
 	g++ -c vm.cpp $(flags) -o $(bin)/vm.o
@@ -33,3 +33,12 @@ $(bin)/generator.o: generator.cpp
 
 $(bin)/variable.o: variable.cpp
 	g++ -c variable.cpp $(flags) -o $(bin)/variable.o
+
+test:
+	$(bin)/kumo ../examples/test.kmo
+
+delete:
+	rm -f $(bin)/kumo.exe
+	rm -f $(objects)
+
+clean: delete $(bin)/kumo
