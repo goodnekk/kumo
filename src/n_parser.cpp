@@ -24,7 +24,6 @@ token parser::getToken(int n){
 
 parsenode * parser::codeblock(int n){
     LOG_DEBUG("Parser: try codeblock "<<n);
-
 }
 
 
@@ -36,6 +35,7 @@ parsenode * parser::call(int n){
     parsenode * b = c_operator(n+1,"(");
 
     if(a&&b){
+        delete b; //don't need it anymore
         parsenode * node = new parsenode(lexemetypes::CALL,2);
         node->push(a);
 
@@ -43,31 +43,27 @@ parsenode * parser::call(int n){
         int argumentlength = 0;
 
         //check arguments
-        parsenode * c = argumentlist(n+2);
+        parsenode * c = argument_list(n+2);
         if(c){
             //add arguments and update argumentlist
             node->push(c);
             argumentlength = (c->length);
-        } else {
-            delete c;
         }
-
 
         parsenode * d = c_operator(n+2+argumentlength,")");
         if(d){
+            delete d; //don't need it anymore
             return node;
         } else {
             delete node;
-            delete d;
         }
     }
-    delete a;
-    delete b;
+
     return NULL;
 }
 
 //argumentlist seperated by comma's: 4,54,foo(),blaa,"text"
-parsenode * parser::argumentlist(int n){
+parsenode * parser::argument_list(int n){
     LOG_DEBUG("Parser: try argumentlist "<<n);
 
     bool cont = true;
@@ -82,19 +78,34 @@ parsenode * parser::argumentlist(int n){
             //if we find comma increse lenght
             parsenode * b = c_operator(n+(a->length), ",");
             if(b){
-
+                delete b; //don't need it anymore
                 node->length+=1;
                 n+=1+(a->length);
             } else {//if not end list and return
                 cont = false;
             }
         } else { //if there is no expression fail
-            delete a;
             delete node;
             return NULL;
         }
     }
     return node;
+}
+
+//expression
+parsenode * parser::expression(int n) {
+    parsenode * a = math_expression(n);
+    if(a){
+        return a;
+    } else {
+        return NULL;
+    }
+}
+
+
+//mathexpression
+parsenode * parser::math_expression(int n){
+
 }
 
 //variable: a  b  foo  bar  length

@@ -5,6 +5,8 @@
 
 #include "lexemetypes.h"
 
+using namespace std;
+
 class parsenode {
 public:
     //

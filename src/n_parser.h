@@ -22,8 +22,14 @@ class parser{
 
         parsenode * codeblock(int n);
 
+        //function calls
         parsenode * call(int n);
-        parsenode * argumentlist(int n);
+        parsenode * argument_list(int n);
+
+        //expressions
+        parsenode * expression(int n);
+        parsenode * math_expression(int n);
+
         //terminals
         parsenode * variable(int n);
         parsenode * text(int n);
