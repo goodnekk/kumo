@@ -1,7 +1,4 @@
-if(true,{
+b = {
     say("true")
-})
-
-if(false,{
-    say("false")
-})
+}
+b()
