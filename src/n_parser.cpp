@@ -128,7 +128,7 @@ parsenode * parser::argument_list(int n){
 
     while(cont) {
         //if we find an expression add to list
-        parsenode * a = expression(n); //FIXME: should be expression
+        parsenode * a = expression(n);
         if(a) {
             node->push(a);
 
@@ -157,9 +157,19 @@ parsenode * parser::expression(int n){
         return a;
     }
 
-    parsenode * b = math_expression(n);
+    parsenode * b = boolean_expression(n);
     if(b){
         return b;
+    }
+
+    parsenode * c = math_expression(n);
+    if(c){
+        return c;
+    }
+    //TODO: if c is terminal, check for text alternative
+    parsenode * d = text_expression(n);
+    if(d){
+        return d;
     }
 
     return NULL;
@@ -228,7 +238,7 @@ parsenode * parser::names_list(int n){
 
     while(cont) {
         //if we find an expression add to list
-        parsenode * a = variable(n); //FIXME: should be expression
+        parsenode * a = variable(n);
         if(a) {
             node->push(a);
 
@@ -274,7 +284,7 @@ parsenode * parser::add_sub(int n){
         if(b){
             parsenode * c = add_sub(n+(a->length)+1);
             if(c){
-                parsenode * node = new parsenode(n,lexemetypes::ARITHMATIC,1);
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
                 node->value = op;
                 node->push(a);
                 node->push(c);
@@ -288,7 +298,7 @@ parsenode * parser::add_sub(int n){
 
 parsenode * parser::mult_div(int n){
     LOG_DEBUG("Parser: try multiply/divide "<<n);
-    parsenode * a = math_operand(n); //FIXME:should be multdiv
+    parsenode * a = math_operand(n);
     if(a){
         string op = "*";
         parsenode * b = c_operator(n+(a->length),op);
@@ -299,7 +309,7 @@ parsenode * parser::mult_div(int n){
         if(b){
             parsenode * c = mult_div(n+(a->length)+1);
             if(c){
-                parsenode * node = new parsenode(n,lexemetypes::ARITHMATIC,1);
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
                 node->value = op;
                 node->push(a);
                 node->push(c);
@@ -307,26 +317,6 @@ parsenode * parser::mult_div(int n){
             }
         }
         return a;
-    }
-    return NULL;
-}
-
-parsenode * parser::parenthesized(int n){
-    LOG_DEBUG("Parser: try parenthesized "<<n);
-    parsenode * a = c_operator(n,"(");
-    if(a){
-        parsenode * b = add_sub(n+1);
-        if(b){
-            parsenode * c = c_operator(n+1+b->length,")");
-            if(c){
-                b->length+=2;
-                return b;
-            } else {
-                LOG_COMPILE_ERROR("Unballanced parenthesis, expected ')'");
-                STOP();
-                return NULL;
-            }
-        }
     }
     return NULL;
 }
@@ -351,6 +341,119 @@ parsenode * parser::math_operand(int n){
     parsenode * d = parenthesized(n);
     if(d){
         return d;
+    }
+    return NULL;
+}
+
+parsenode * parser::parenthesized(int n){
+    LOG_DEBUG("Parser: try parenthesized "<<n);
+    parsenode * a = c_operator(n,"(");
+    if(a){
+        parsenode * b = add_sub(n+1);
+        if(b){
+            parsenode * c = c_operator(n+1+b->length,")");
+            if(c){
+                b->length+=2;
+                return b;
+            } else {
+                LOG_COMPILE_ERROR("Unballanced parenthesis, expected ')'");
+                STOP();
+                return NULL;
+            }
+        }
+    }
+    return NULL;
+}
+
+parsenode * parser::text_expression(int n){
+    LOG_DEBUG("Parser: try text expression "<<n);
+    parsenode * a = text_add(n);
+    if(a){
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::text_add(int n){
+    parsenode * a = text_operand(n);
+    if(a){
+        string op = "+";
+        parsenode * b = c_operator(n+(a->length),op);
+        if(b){
+            parsenode * c = text_add(n+(a->length)+1);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::TEXTOPERATION,1);
+                node->push(a);
+                node->push(c);
+                return node;
+            } else {
+                //TODO: expected text error
+                delete b;
+            }
+        }
+        return a;
+    }
+}
+
+parsenode * parser::text_operand(int n){
+    parsenode * a = text(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = number(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = call(n);
+    if(c){
+        return c;
+    }
+
+    parsenode * d = variable(n);
+    if(d){
+        return d;
+    }
+    return NULL;
+}
+
+parsenode * parser::boolean_expression(int n){
+    LOG_DEBUG("Parser: try boolean expression "<<n);
+    parsenode * a = boolean_compare(n);
+    if(a){
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::boolean_compare(int n){
+    LOG_DEBUG("Parser: try boolean compare "<<n);
+    parsenode * a = boolean_operand(n);
+    if(a){
+        parsenode * b = c_operator(n+1,"=");
+        parsenode * c = c_operator(n+2,"=");
+        if(b&&c){
+            delete b;
+            delete c;
+            parsenode * d = boolean_compare(n+3);
+            if(d){
+                parsenode * node = new parsenode(n,lexemetypes::BOOLEANOPERATION,2);
+                node->value = "==";
+                node->push(a);
+                node->push(d);
+                return node;
+            }
+        }
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::boolean_operand(int n){
+    parsenode * a = boolean(n);
+    if(a){
+        return a;
     }
     return NULL;
 }
@@ -386,6 +489,18 @@ parsenode * parser::number(int n){
         return node;
     }
     return NULL;
+}
+
+parsenode * parser::boolean(int n){
+    LOG_DEBUG("Parser: try boolean literal "<<n);
+    parsenode * e = variable(n);
+    if(e){
+        if(e->value=="true" || e->value=="false"){
+            parsenode * node = new parsenode(n,lexemetypes::BOOLEAN,1);
+            node->value = e->value;
+            return node;
+        }
+    }
 }
 
 //convenience function that checks operators like: * + ( ) ,

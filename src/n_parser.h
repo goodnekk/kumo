@@ -32,16 +32,27 @@ class parser{
         parsenode * expression(int n);
             parsenode * declaration(int n);
                 parsenode * names_list(int n);
+
             parsenode * math_expression(int n);
                 parsenode * add_sub(int n);
                 parsenode * mult_div(int n);
                 parsenode * math_operand(int n);
                 parsenode * parenthesized(int n);
 
+            parsenode * text_expression(int n);
+                parsenode * text_add(int n);
+                parsenode * text_operand(int n);
+
+            parsenode * boolean_expression(int n);
+                parsenode * boolean_compare(int n);
+                parsenode * boolean_operand(int n);
+
+
         //terminals
         parsenode * variable(int n);
         parsenode * text(int n);
         parsenode * number(int n);
+        parsenode * boolean(int n);
 
         //convenience functions
         parsenode * c_operator(int n, string w);

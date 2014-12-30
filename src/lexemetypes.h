@@ -22,5 +22,7 @@ enum class lexemetypes {
     ARGUMENTLIST,
 
     //EXPRESSIONS
-    ARITHMATIC,
+    ARITHMETIC,
+    TEXTOPERATION,
+    BOOLEANOPERATION
 };

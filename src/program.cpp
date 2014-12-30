@@ -57,7 +57,7 @@ int program::new_scope(){
 void program::pop_scope(int n){
     LOG_DEBUG("end scope");
     for(int i=variables.size()-1; i>=n; i--){
-        variables[i]="/"; //FIXME: this is just hackish
+        variables[i]="/"; //FIXME: this is just hackish use a map of somesorts
     }
 }
 int program::new_function(){
