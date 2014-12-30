@@ -4,7 +4,7 @@
 parsenode * parser::parse(vector<token> list){
     LOG_DEBUG("Parser: Started");
     tokens = list;
-    parsenode * a = call(0);
+    parsenode * a = codeblock(0);
     if(a) {
         LOG_DEBUG("Parser: Correctly parsed");
         return a;
@@ -14,6 +14,7 @@ parsenode * parser::parse(vector<token> list){
         STOP();
     }
 }
+
 //get the next token from the vector
 token parser::getToken(int n){
     if (n<tokens.size())
@@ -22,10 +23,66 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
+//codeblock: statements followed by newlines
 parsenode * parser::codeblock(int n){
     LOG_DEBUG("Parser: try codeblock "<<n);
+    bool cont = true;
+    parsenode * node = new parsenode(n,lexemetypes::BLOCK,0);
+    while(cont) {
+        parsenode * a = statement(n);
+        if(a){
+            node->push(a);
+            if(c_endofline(n+(a->length))){
+                n+=(a->length)+1;
+                node->length+=1;
+            } else {
+                cont = false;
+            }
+        } else {
+            if(c_endofline(n)){
+                n+=1; //skip empty line
+                node->length+=1;
+            } else{
+                cont = false;//end of codeblock
+            }
+        }
+    }
+    return node;
 }
 
+//statement
+parsenode * parser::statement(int n){
+    parsenode * a = assignment(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = expression(n);
+    if(b){
+        return b;
+    }
+
+    return NULL;
+}
+
+//assignment:   a = 3*3      b = foo()
+parsenode * parser::assignment(int n){
+    LOG_DEBUG("Parser: try assignment "<<n);
+    parsenode * a = variable(n);
+    if(a){
+        parsenode * b = c_operator(n+1,"=");
+        if(b){
+            parsenode * c = expression(n+2);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::ASSIGNMENT,1);
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+    }
+    return NULL;
+}
 
 //call     foo()      bar(4,5,4,"yes",true)
 parsenode * parser::call(int n){
@@ -36,7 +93,7 @@ parsenode * parser::call(int n){
 
     if(a&&b){
         delete b; //don't need it anymore
-        parsenode * node = new parsenode(lexemetypes::CALL,2);
+        parsenode * node = new parsenode(n,lexemetypes::CALL,2);
         node->push(a);
 
         //keeps track of length of argument list
@@ -67,11 +124,11 @@ parsenode * parser::argument_list(int n){
     LOG_DEBUG("Parser: try argumentlist "<<n);
 
     bool cont = true;
-    parsenode * node = new parsenode(lexemetypes::ARGUMENTLIST,0);
+    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
 
     while(cont) {
         //if we find an expression add to list
-        parsenode * a = number(n); //FIXME: should be expression
+        parsenode * a = expression(n); //FIXME: should be expression
         if(a) {
             node->push(a);
 
@@ -93,26 +150,216 @@ parsenode * parser::argument_list(int n){
 }
 
 //expression
-parsenode * parser::expression(int n) {
-    parsenode * a = math_expression(n);
+parsenode * parser::expression(int n){
+    LOG_DEBUG("Parser: try expression "<<n);
+    parsenode * a = declaration(n);
     if(a){
         return a;
-    } else {
-        return NULL;
     }
+
+    parsenode * b = math_expression(n);
+    if(b){
+        return b;
+    }
+
+    return NULL;
 }
 
+parsenode * parser::declaration(int n){
+    LOG_DEBUG("Parser: try declaration "<<n);
+
+    bool paren = false;
+
+    parsenode * a = c_operator(n, "(");
+    parsenode * b = names_list(n+1);
+    if(a){
+        if(b){
+            n += b->length+1;
+        } else {
+            n += 1;
+            delete b;
+        }
+
+        parsenode * c = c_operator(n, ")");
+        if(c){
+            n+=1;
+            paren = true;
+        } else {
+            //TODO: Expected paren
+            delete a;
+            delete b;
+            return NULL;
+        }
+    } else {
+        delete a;
+        delete b;
+        b = NULL;
+    }
+
+    parsenode * d = c_operator(n, "{");
+    if(d){
+        parsenode * e = codeblock(n+1);
+        if(e){
+            parsenode * f = c_operator(n+1+(e->length), "}");
+            if(f){
+                int length = 2;
+                if(paren){length+=2;}
+
+                parsenode * node = new parsenode(n,lexemetypes::DECLARATION,length);
+                node->push(e);
+                if(b){node->push(b);}
+                return node;
+
+            } else {
+                //TODO: Expected }
+                return NULL;
+            }
+        }
+    }
+    return NULL;
+}
+
+//argumentlist seperated by comma's: 4,54,foo(),blaa,"text"
+parsenode * parser::names_list(int n){
+    LOG_DEBUG("Parser: try names list "<<n);
+
+    bool cont = true;
+    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
+
+    while(cont) {
+        //if we find an expression add to list
+        parsenode * a = variable(n); //FIXME: should be expression
+        if(a) {
+            node->push(a);
+
+            //if we find comma increse lenght
+            parsenode * b = c_operator(n+(a->length), ",");
+            if(b){
+                delete b; //don't need it anymore
+                node->length+=1;
+                n+=1+(a->length);
+            } else {//if not end list and return
+                cont = false;
+            }
+        } else { //if there is no expression fail
+            delete node;
+            return NULL;
+        }
+    }
+    return node;
+}
 
 //mathexpression
 parsenode * parser::math_expression(int n){
+    LOG_DEBUG("Parser: try math expression "<<n);
 
+    parsenode * a = add_sub(n);
+    if(a){
+        return a;
+    }
+
+    return NULL;
+}
+
+parsenode * parser::add_sub(int n){
+    LOG_DEBUG("Parser: try add/subtract "<<n);
+    parsenode * a = mult_div(n);
+    if(a){
+        string op = "+";
+        parsenode * b = c_operator(n+(a->length),op);
+        if(!b){
+            op = "-";
+            b = c_operator(n+(a->length),op);
+        }
+        if(b){
+            parsenode * c = add_sub(n+(a->length)+1);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMATIC,1);
+                node->value = op;
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::mult_div(int n){
+    LOG_DEBUG("Parser: try multiply/divide "<<n);
+    parsenode * a = math_operand(n); //FIXME:should be multdiv
+    if(a){
+        string op = "*";
+        parsenode * b = c_operator(n+(a->length),op);
+        if(!b){
+            op = "/";
+            b = c_operator(n+(a->length),op);
+        }
+        if(b){
+            parsenode * c = mult_div(n+(a->length)+1);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMATIC,1);
+                node->value = op;
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::parenthesized(int n){
+    LOG_DEBUG("Parser: try parenthesized "<<n);
+    parsenode * a = c_operator(n,"(");
+    if(a){
+        parsenode * b = add_sub(n+1);
+        if(b){
+            parsenode * c = c_operator(n+1+b->length,")");
+            if(c){
+                b->length+=2;
+                return b;
+            } else {
+                LOG_COMPILE_ERROR("Unballanced parenthesis, expected ')'");
+                STOP();
+                return NULL;
+            }
+        }
+    }
+    return NULL;
+}
+
+parsenode * parser::math_operand(int n){
+    LOG_DEBUG("Parser: try operand "<<n);
+    parsenode * a = number(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = call(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = variable(n);
+    if(c){
+        return c;
+    }
+
+    parsenode * d = parenthesized(n);
+    if(d){
+        return d;
+    }
+    return NULL;
 }
 
 //variable: a  b  foo  bar  length
 parsenode * parser::variable(int n){
     LOG_DEBUG("Parser: try variable "<<n);
     if(c_type(n,tokentypes::NAME)){
-        parsenode * node = new parsenode(lexemetypes::VARIABLE,1);
+        parsenode * node = new parsenode(n,lexemetypes::VARIABLE,1);
         node->value = getToken(n).tokenstring;
         return node;
     }
@@ -123,7 +370,7 @@ parsenode * parser::variable(int n){
 parsenode * parser::text(int n){
     LOG_DEBUG("Parser: try string "<<n);
     if (c_type(n,tokentypes::STRING)) {
-        parsenode * node =  new parsenode(lexemetypes::TEXT,1);
+        parsenode * node =  new parsenode(n,lexemetypes::TEXT,1);
         node->value = getToken(n).tokenstring;
         return node;
     }
@@ -134,7 +381,7 @@ parsenode * parser::text(int n){
 parsenode * parser::number(int n){
     LOG_DEBUG("Parser: try number "<<n);
     if (c_type(n,tokentypes::NUMBER)) {
-        parsenode * node = new parsenode(lexemetypes::NUMBER,1);
+        parsenode * node = new parsenode(n,lexemetypes::NUMBER,1);
         node->value = getToken(n).tokenstring;
         return node;
     }
@@ -145,7 +392,7 @@ parsenode * parser::number(int n){
 parsenode * parser::c_operator(int n, string w){
     LOG_DEBUG("Parser: try operator '"<<w<<"' "<<n);
     if (c_type(n,tokentypes::OPERATOR) && c_string(n,w)) {
-        parsenode * node = new parsenode(lexemetypes::OPERATOR,1);
+        parsenode * node = new parsenode(n,lexemetypes::OPERATOR,1);
         node->value = w;
         return node;
     }

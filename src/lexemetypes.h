@@ -1,9 +1,14 @@
 #pragma once
+#include <string>
 
 enum class lexemetypes {
-    //convenience
+    //convenience(not used in tree)
     OPERATOR,
 
+    //block of code
+    BLOCK,
+    ASSIGNMENT,
+    DECLARATION,
     //constants
     NUMBER,
     TEXT,
@@ -14,5 +19,8 @@ enum class lexemetypes {
     VARIABLE,
 
     //lists
-    ARGUMENTLIST
+    ARGUMENTLIST,
+
+    //EXPRESSIONS
+    ARITHMATIC,
 };

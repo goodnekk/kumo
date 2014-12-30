@@ -1,3 +1,6 @@
+//author: Marcel Goethals
+//Lexer, takes a string and converts it into a vector of tokens.
+
 #include "lexer.h"
 
 bool lexer::isLetter(string c){

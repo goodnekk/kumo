@@ -1,3 +1,7 @@
+//author: Marcel Goethals
+//Graph generator, takes a parsetree and turns it into a graph in DOT format
+//This file can be read in graphviz or some other program.
+
 #include "graphgenerator.h"
 
 void graphgenerator::generate(parsenode * root){
@@ -12,6 +16,15 @@ int graphgenerator::analyse(parsenode * node){
 
     lexemetypes t = node->type;
     switch(t){
+        case lexemetypes::BLOCK:
+            new_label("block");
+            break;
+        case lexemetypes::ASSIGNMENT:
+            new_label("assignment");
+            break;
+        case lexemetypes::DECLARATION:
+            new_label("declaration");
+            break;
         case lexemetypes::NUMBER:
             new_label("number: "+(node->value));
             break;
@@ -23,6 +36,10 @@ int graphgenerator::analyse(parsenode * node){
             break;
         case lexemetypes::ARGUMENTLIST:
             new_label("arguments");
+            break;
+        case lexemetypes::ARITHMATIC:
+            new_label("arithmatic:"+(node->value));
+            break;
         default:
             LOG_DEBUG("Graph: unknow lexemetype: ");
             break;
@@ -49,13 +66,17 @@ void graphgenerator::new_link(int a, int b){
 }
 
 void graphgenerator::write_graph(){
-    LOG_DEBUG("digraph parsetree {");
+    ofstream myfile;
+    myfile.open ("../parsetree.gv");
+
+    myfile <<"digraph parsetree {"<<endl;
     for(int i=0; i < labels.size(); i++){
-        LOG_DEBUG("    "<<labels.at(i));
+        myfile <<"    "<<labels.at(i)<<endl;
     }
-    LOG_DEBUG("//links");
+    myfile <<"//links"<<endl;
     for(int i=0; i < links.size(); i++){
-        LOG_DEBUG("    "<<links.at(i));
+        myfile <<"    "<<links.at(i)<<endl;
     }
-    LOG_DEBUG("}");
+    myfile <<"}"<<endl;
+    myfile.close();
 }

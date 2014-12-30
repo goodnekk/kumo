@@ -12,11 +12,14 @@ public:
     //
     string value;
 
+    int token;
     int length;
+    
     lexemetypes type;
     vector <parsenode*> children;
-    parsenode(lexemetypes t, int l){
-        type = t;
+    parsenode(int tok, lexemetypes ty, int l){
+        token = tok;
+        type = ty;
         length = l;
     };
     void push(parsenode * c){
