@@ -19,8 +19,8 @@ $(bin)/token.o: token.cpp
 $(bin)/program.o: program.cpp
 	g++ -c program.cpp $(flags) -o $(bin)/program.o
 
-$(bin)/parser.o: n_parser.cpp
-	g++ -c n_parser.cpp $(flags) -o $(bin)/parser.o
+$(bin)/parser.o: parser.cpp
+	g++ -c parser.cpp $(flags) -o $(bin)/parser.o
 
 $(bin)/vm.o: vm.cpp
 	g++ -c vm.cpp $(flags) -o $(bin)/vm.o

@@ -1,6 +1,6 @@
 #include "log.h"
 #include "lexer.h"
-#include "n_parser.h"
+#include "parser.h"
 #include "graphgenerator.h"
 //#include "generator.h"
 //#include "vm.h"

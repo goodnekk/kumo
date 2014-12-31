@@ -1,13 +1,10 @@
-//author: Marcel Goethals
-//Hand written parser, no lousy parser generators here.
-//Takes a vector of tokens and builds a parse tree.
-
 #include "parser.h"
 
-lexemes::node * parser::parse(vector<token> list){
+
+parsenode * parser::parse(vector<token> list){
     LOG_DEBUG("Parser: Started");
     tokens = list;
-    lexemes::node * a = codeblock(0);
+    parsenode * a = codeblock(0);
     if(a) {
         LOG_DEBUG("Parser: Correctly parsed");
         return a;
@@ -26,253 +23,336 @@ token parser::getToken(int n){
         return token(tokentypes::NOTASGN,"");
 }
 
-lexemes::node * parser::codeblock(int n){
-    //statements and newlines
+//codeblock: statements followed by newlines
+parsenode * parser::codeblock(int n){
     LOG_DEBUG("Parser: try codeblock "<<n);
     bool cont = true;
-    vector<lexemes::node*> list;
-    int firstn=n;
+    parsenode * node = new parsenode(n,lexemetypes::BLOCK,0);
     while(cont) {
-        lexemes::node * a = statement(n);
+        parsenode * a = statement(n);
         if(a){
-            //push onto list
-            list.push_back(a);
-            bool s = c_endofline(n+(a->length));
-            if(s){
+            node->push(a);
+            if(c_endofline(n+(a->length))){
                 n+=(a->length)+1;
+                node->length+=1;
             } else {
-                //end of block bracket
-                lexemes::node * brack = c_operator(n+(a->length),"}");
-                if(brack){
-                    n+=(a->length);
-                    cont = false;
-                } else{
-                    LOG_COMPILE_ERROR("Expected end of line");
-                    STOP();
-                    return NULL;
-                }
+                cont = false;
             }
         } else {
-            //not a statement or empty line:
-            bool b = c_endofline(n);
-            if(b){
+            if(c_endofline(n)){
                 n+=1; //skip empty line
+                node->length+=1;
             } else{
                 cont = false;//end of codeblock
             }
         }
     }
-    return new lexemes::statementlist(list,(n-firstn));
+    return node;
 }
-//statements are calls, expressions, definitions, flow control
-//each statement should finish with a new line
-lexemes::node * parser::statement(int n){
-    LOG_DEBUG("Parser: try statement "<<n);
-    //simple call statements
 
-    lexemes::node * d = declaration(n);
+//statement
+parsenode * parser::statement(int n){
+    parsenode * a = assignment(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = expression(n);
+    if(b){
+        return b;
+    }
+
+    return NULL;
+}
+
+//assignment:   a = 3*3      b = foo()
+parsenode * parser::assignment(int n){
+    LOG_DEBUG("Parser: try assignment "<<n);
+    parsenode * a = variable(n);
+    if(a){
+        parsenode * b = c_operator(n+1,"=");
+        if(b){
+            parsenode * c = expression(n+2);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::ASSIGNMENT,1);
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+    }
+    return NULL;
+}
+
+//call     foo()      bar(4,5,4,"yes",true)
+parsenode * parser::call(int n){
+    LOG_DEBUG("Parser: try call "<<n);
+    //check foo(
+    parsenode * a = variable(n);
+    parsenode * b = c_operator(n+1,"(");
+
+    if(a&&b){
+        delete b; //don't need it anymore
+        parsenode * node = new parsenode(n,lexemetypes::CALL,2);
+        node->push(a);
+
+        //keeps track of length of argument list
+        int argumentlength = 0;
+
+        //check arguments
+        parsenode * c = argument_list(n+2);
+        if(c){
+            //add arguments and update argumentlist
+            node->push(c);
+            argumentlength = (c->length);
+        }
+
+        parsenode * d = c_operator(n+2+argumentlength,")");
+        if(d){
+            delete d; //don't need it anymore
+            return node;
+        } else {
+            delete node;
+        }
+    }
+
+    return NULL;
+}
+
+//argumentlist seperated by comma's: 4,54,foo(),blaa,"text"
+parsenode * parser::argument_list(int n){
+    LOG_DEBUG("Parser: try argumentlist "<<n);
+
+    bool cont = true;
+    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
+
+    while(cont) {
+        //if we find an expression add to list
+        parsenode * a = expression(n);
+        if(a) {
+            node->push(a);
+
+            //if we find comma increse lenght
+            parsenode * b = c_operator(n+(a->length), ",");
+            if(b){
+                delete b; //don't need it anymore
+                node->length+=1;
+                n+=1+(a->length);
+            } else {//if not end list and return
+                cont = false;
+            }
+        } else { //if there is no expression fail
+            delete node;
+            return NULL;
+        }
+    }
+    return node;
+}
+
+//expression
+parsenode * parser::expression(int n){
+    LOG_DEBUG("Parser: try expression "<<n);
+    parsenode * a = declaration(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = boolean_expression(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = math_expression(n);
+    if(c){
+        return c;
+    }
+    //TODO: if c is terminal, check for text alternative
+    parsenode * d = text_expression(n);
     if(d){
         return d;
     }
 
-    //FIXME: call should be part of expression
-    lexemes::node * a = call(n);
+    return NULL;
+}
+
+parsenode * parser::declaration(int n){
+    LOG_DEBUG("Parser: try declaration "<<n);
+
+    bool paren = false;
+
+    parsenode * a = c_operator(n, "(");
+    parsenode * b = names_list(n+1);
     if(a){
-        return a;
-    }
-    //assignment statement a = expression
-    lexemes::node * b = assignment(n);
-    if(b){
-        return b;
-    }
-
-    lexemes::node * c = expression(n);
-    if(c){
-        return c;
-    }
-    return NULL;
-    //control structures
-}
-
-lexemes::node * parser::assignment(int n){
-    LOG_DEBUG("Parser: try assignment "<<n);
-    lexemes::name * a = name(n);
-    lexemes::node * b = c_operator(n+1,"=");
-    if(a && b){
-        lexemes::node * d = declaration(n+2);
-        if(d){
-            return new lexemes::assignment(a,d);
+        if(b){
+            n += b->length+1;
+        } else {
+            n += 1;
+            delete b;
         }
 
-        lexemes::node * c = expression(n+2);
+        parsenode * c = c_operator(n, ")");
         if(c){
-            return new lexemes::assignment(a,c);
+            n+=1;
+            paren = true;
+        } else {
+            //TODO: Expected paren
+            delete a;
+            delete b;
+            return NULL;
         }
+    } else {
+        delete a;
+        delete b;
+        b = NULL;
     }
-    return NULL;
-}
 
-//a function call: name(argument)
-lexemes::node * parser::call(int n){
-    LOG_DEBUG("Parser: try call "<<n);
-    //word(statement)
-    lexemes::variable * a = variable(n);
-    lexemes::node * b = c_operator(n+1,"(");
-    if(a && b){
-        lexemes::node * c = c_operator(n+2,")");
-        if(c){
-            LOG_DEBUG("Parser: found simple call");
-            return new lexemes::call(a,NULL);
-        }
-        lexemes::node * d = argumentlist(n+2);
-        if(d){
-            lexemes::node * e = c_operator(n+2+(d->length),")");
-            if(e){
-                LOG_DEBUG("Parser: found call");
-                return new lexemes::call(a,d);
+    parsenode * d = c_operator(n, "{");
+    if(d){
+        parsenode * e = codeblock(n+1);
+        if(e){
+            parsenode * f = c_operator(n+1+(e->length), "}");
+            if(f){
+                int length = 2;
+                if(paren){length+=2;}
+
+                parsenode * node = new parsenode(n,lexemetypes::DECLARATION,length);
+                node->push(e);
+                if(b){node->push(b);}
+                return node;
+
+            } else {
+                //TODO: Expected }
+                return NULL;
             }
         }
     }
     return NULL;
 }
 
-lexemes::node * parser::argumentlist(int n){
+//argumentlist seperated by comma's: 4,54,foo(),blaa,"text"
+parsenode * parser::names_list(int n){
+    LOG_DEBUG("Parser: try names list "<<n);
+
     bool cont = true;
-    vector<lexemes::node*> list;
+    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
+
     while(cont) {
-        lexemes::node * a = expression(n);
-        if(a){
-            //push onto list
-            list.push_back(a);
-            lexemes::node * s = c_operator(n+(a->length), ",");
-            if(s){
-                n=n+1+(a->length);
-            } else {
+        //if we find an expression add to list
+        parsenode * a = variable(n);
+        if(a) {
+            node->push(a);
+
+            //if we find comma increse lenght
+            parsenode * b = c_operator(n+(a->length), ",");
+            if(b){
+                delete b; //don't need it anymore
+                node->length+=1;
+                n+=1+(a->length);
+            } else {//if not end list and return
                 cont = false;
             }
-        } else {
+        } else { //if there is no expression fail
+            delete node;
             return NULL;
         }
     }
-    return new lexemes::argumentlist(list);
+    return node;
 }
 
-lexemes::node * parser::expression(int n){
-    lexemes::node * c = booleanexpression(n);
-    if(c){
-        return c;
-    }
+//mathexpression
+parsenode * parser::math_expression(int n){
+    LOG_DEBUG("Parser: try math expression "<<n);
 
-    lexemes::node * a = mathexpression(n);
-    if(a){
-        return a;
-    }
-    lexemes::node * b = textexpression(n);
-    if(b){
-        return b;
-    }
-    return NULL;
-}
-//an expression: math 1+2*3
-//operator precedence is:
-//parenthesis, addsub, multdiv
-lexemes::node * parser::mathexpression(int n){
-    LOG_DEBUG("Parser: try expression "<<n);
-
-    lexemes::node * c = declaration(n);
-    if(c){
-        return c;
-    }
-
-    lexemes::node * a = addsub(n);
+    parsenode * a = add_sub(n);
     if(a){
         return a;
     }
 
-    lexemes::node * b = parenthesized(n);
-    if(b){
-        return b;
-    }
     return NULL;
 }
 
-//checks for addition or subtraction
-//gives precedence to multiplication by checking that first
-
-lexemes::node * parser::addsub(int n){
+parsenode * parser::add_sub(int n){
     LOG_DEBUG("Parser: try add/subtract "<<n);
-    lexemes::node * a = multdiv(n);
-    if(!a){
-        a = parenthesized(n);
-    }
+    parsenode * a = mult_div(n);
     if(a){
-        //check for plus or minus
-        bool minus = false;
-        lexemes::node * b = c_operator(n+(a->length),"+");
+        string op = "+";
+        parsenode * b = c_operator(n+(a->length),op);
         if(!b){
-            minus = true;
-            b = c_operator(n+(a->length),"-");
-        }
-
-        if (b){
-            lexemes::node * c = addsub(n+(a->length)+1);
-            if (c) {
-                if (minus){
-                    return new lexemes::arithmetic(a,c,"-");
-                } else{
-                    return new lexemes::arithmetic(a,c,"+");
-                }
-
-            }
-            return NULL;
-        }
-        return a;
-    }
-    return NULL;
-}
-
-//checks for multiplication and division
-//else evaluates to a number
-lexemes::node * parser::multdiv(int n){
-    LOG_DEBUG("Parser: try multiply/divide "<<n);
-    lexemes::node * a = operand(n);
-    if(!a){
-        a = parenthesized(n);
-    }
-    if (a){
-        bool divide = false;
-        lexemes::node * b = c_operator(n+(a->length),"*");
-        if(!b){
-            divide = true;
-            b = c_operator(n+(a->length),"/");
+            op = "-";
+            b = c_operator(n+(a->length),op);
         }
         if(b){
-            lexemes::node * c = multdiv(n+(a->length)+1);
-            if (c) {
-                if(divide){
-                    return new lexemes::arithmetic(a,c,"/");
-                } else{
-                    return new lexemes::arithmetic(a,c,"*");
-                }
-
-            }
-            return NULL;
-        }
-        return a;
-    }
-    return NULL;
-}
-
-//checks for parenthesized expressions. Which are evaluated first
-lexemes::node * parser::parenthesized(int n){
-    LOG_DEBUG("Parser: try parenthesized "<<n);
-    lexemes::node * a = c_operator(n,"(");
-    if(a){
-        lexemes::node * b = addsub(n+1);
-        if(b){
-            lexemes::node * c = c_operator(n+1+b->length,")");
+            parsenode * c = add_sub(n+(a->length)+1);
             if(c){
-                LOG_DEBUG("Parser: found parethesized");
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
+                node->value = op;
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::mult_div(int n){
+    LOG_DEBUG("Parser: try multiply/divide "<<n);
+    parsenode * a = math_operand(n);
+    if(a){
+        string op = "*";
+        parsenode * b = c_operator(n+(a->length),op);
+        if(!b){
+            op = "/";
+            b = c_operator(n+(a->length),op);
+        }
+        if(b){
+            parsenode * c = mult_div(n+(a->length)+1);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
+                node->value = op;
+                node->push(a);
+                node->push(c);
+                return node;
+            }
+        }
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::math_operand(int n){
+    LOG_DEBUG("Parser: try operand "<<n);
+    parsenode * a = number(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = call(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = variable(n);
+    if(c){
+        return c;
+    }
+
+    parsenode * d = parenthesized(n);
+    if(d){
+        return d;
+    }
+    return NULL;
+}
+
+parsenode * parser::parenthesized(int n){
+    LOG_DEBUG("Parser: try parenthesized "<<n);
+    parsenode * a = c_operator(n,"(");
+    if(a){
+        parsenode * b = add_sub(n+1);
+        if(b){
+            parsenode * c = c_operator(n+1+b->length,")");
+            if(c){
                 b->length+=2;
                 return b;
             } else {
@@ -285,182 +365,151 @@ lexemes::node * parser::parenthesized(int n){
     return NULL;
 }
 
-lexemes::node * parser::operand(int n){
-    LOG_DEBUG("Parser: try operand "<<n);
-    lexemes::node * a = number(n);
+parsenode * parser::text_expression(int n){
+    LOG_DEBUG("Parser: try text expression "<<n);
+    parsenode * a = text_add(n);
+    if(a){
+        return a;
+    }
+    return NULL;
+}
+
+parsenode * parser::text_add(int n){
+    parsenode * a = text_operand(n);
+    if(a){
+        string op = "+";
+        parsenode * b = c_operator(n+(a->length),op);
+        if(b){
+            parsenode * c = text_add(n+(a->length)+1);
+            if(c){
+                parsenode * node = new parsenode(n,lexemetypes::TEXTOPERATION,1);
+                node->push(a);
+                node->push(c);
+                return node;
+            } else {
+                //TODO: expected text error
+                delete b;
+            }
+        }
+        return a;
+    }
+}
+
+parsenode * parser::text_operand(int n){
+    parsenode * a = text(n);
     if(a){
         return a;
     }
 
-    lexemes::node * c = call(n);
+    parsenode * b = number(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = call(n);
     if(c){
         return c;
     }
 
-    lexemes::node * b = variable(n);
-    if(b){
-        return b;
+    parsenode * d = variable(n);
+    if(d){
+        return d;
     }
     return NULL;
 }
 
-lexemes::node * parser::textexpression(int n){
-    LOG_DEBUG("Parser: try text expression "<<n);
-    lexemes::node * a = text(n);
+parsenode * parser::boolean_expression(int n){
+    LOG_DEBUG("Parser: try boolean expression "<<n);
+    parsenode * a = boolean_compare(n);
     if(a){
         return a;
     }
     return NULL;
 }
 
-lexemes::node * parser::booleanexpression(int n){
-    LOG_DEBUG("Parser: try boolean expression "<<n);
-
-    lexemes::name * e = name(n);
-    if(e){
-        if(e->value=="true"){
-            return new lexemes::boolean(true);
-        }
-        if(e->value=="false"){
-            return new lexemes::boolean(false);
-        }
-    }
-
-    lexemes::node * a = operand(n);
+parsenode * parser::boolean_compare(int n){
+    LOG_DEBUG("Parser: try boolean compare "<<n);
+    parsenode * a = boolean_operand(n);
     if(a){
-        lexemes::node * b = c_operator(n+1,"=");
-        lexemes::node * c = c_operator(n+2,"=");
+        parsenode * b = c_operator(n+1,"=");
+        parsenode * c = c_operator(n+2,"=");
         if(b&&c){
-            lexemes::node * d = operand(n+2+(a->length));
+            delete b;
+            delete c;
+            parsenode * d = boolean_compare(n+3);
             if(d){
-                return new lexemes::booleanexpression(a,d,"==");
+                parsenode * node = new parsenode(n,lexemetypes::BOOLEANOPERATION,2);
+                node->value = "==";
+                node->push(a);
+                node->push(d);
+                return node;
             }
         }
-
-        b = c_operator(n+1,">");
-        if(b){
-            lexemes::node * d = operand(n+1+(a->length));
-            if(d){
-                return new lexemes::booleanexpression(a,d,">");
-            }
-        }
-
-        b = c_operator(n+1,"<");
-        if(b){
-            lexemes::node * d = operand(n+1+(a->length));
-            if(d){
-                return new lexemes::booleanexpression(a,d,"<");
-            }
-        }
+        return a;
     }
     return NULL;
 }
 
-//function declaration
-lexemes::node * parser::declaration(int n){
-    LOG_DEBUG("Parser: try declaration "<<n);
-    //(arguments){ expression }
-    bool paren = false;
-    lexemes::node * a = c_operator(n, "(");
-    lexemes::node * b = nameslist(n+1);
-
-    int length = 0;
-    if(a) {
-        if(b){
-            length = b->length;
-        }
-        lexemes::node * c = c_operator(n+1+(length), ")");
-        if(c){
-            length+=2;
-            paren = true;
-        }
-    }
-
-    n+=length;
-
-    lexemes::node * d = c_operator(n, "{");
-    if(d){
-        lexemes::node * e = codeblock(n+1);
-        if(e){
-            lexemes::node * f = c_operator(n+1+(e->length), "}");
-            if(f){
-                LOG_DEBUG("Parser: found declaration");
-                return new lexemes::declaration(b, e, paren);
-            } else {
-                LOG_COMPILE_ERROR("expected }");
-                STOP();
-            }
-        }
+parsenode * parser::boolean_operand(int n){
+    parsenode * a = boolean(n);
+    if(a){
+        return a;
     }
     return NULL;
 }
 
-//list of names
-lexemes::node * parser::nameslist(int n){
-    bool cont = true;
-    vector<lexemes::name*> list;
-    while(cont) {
-        lexemes::name * a = name(n);
-        if(a){
-            //push onto list
-            list.push_back(a);
-            lexemes::node * s = c_operator(n+1, ",");
-            if(s){
-                n=n+2;
-            } else {
-                cont = false;
-            }
-        } else {
-            return NULL;
-        }
-    }
-
-    if(list.size()>0){
-        return new lexemes::nameslist(list);
+//variable: a  b  foo  bar  length
+parsenode * parser::variable(int n){
+    LOG_DEBUG("Parser: try variable "<<n);
+    if(c_type(n,tokentypes::NAME)){
+        parsenode * node = new parsenode(n,lexemetypes::VARIABLE,1);
+        node->value = getToken(n).tokenstring;
+        return node;
     }
     return NULL;
 }
 
-//terminal... number[0..9]
-lexemes::node * parser::number(int n){
-    LOG_DEBUG("Parser: try number "<<n);
-    if (c_type(n,tokentypes::NUMBER)) {
-        return new lexemes::number(getToken(n).tokenstring);
-    }
-    return NULL;
-}
-
-lexemes::node * parser::text(int n){
+//constant text:    "hello world"    "how are ya?"
+parsenode * parser::text(int n){
     LOG_DEBUG("Parser: try string "<<n);
     if (c_type(n,tokentypes::STRING)) {
-        return new lexemes::text(getToken(n).tokenstring);
+        parsenode * node =  new parsenode(n,lexemetypes::TEXT,1);
+        node->value = getToken(n).tokenstring;
+        return node;
     }
     return NULL;
 }
 
-lexemes::variable * parser::variable(int n){
-    LOG_DEBUG("Parser: try variable "<<n);
-    lexemes::node * b = name(n);
-    if(b){
-        return new lexemes::variable(getToken(n).tokenstring);
+//constant number: 5   5.3  20000
+parsenode * parser::number(int n){
+    LOG_DEBUG("Parser: try number "<<n);
+    if (c_type(n,tokentypes::NUMBER)) {
+        parsenode * node = new parsenode(n,lexemetypes::NUMBER,1);
+        node->value = getToken(n).tokenstring;
+        return node;
     }
     return NULL;
 }
 
-//terminal... name [a..bA..B]
-lexemes::name * parser::name(int n){
-    LOG_DEBUG("Parser: try name "<<n);
-    if(c_type(n,tokentypes::NAME)){
-        return new lexemes::name(getToken(n).tokenstring);
+parsenode * parser::boolean(int n){
+    LOG_DEBUG("Parser: try boolean literal "<<n);
+    parsenode * e = variable(n);
+    if(e){
+        if(e->value=="true" || e->value=="false"){
+            parsenode * node = new parsenode(n,lexemetypes::BOOLEAN,1);
+            node->value = e->value;
+            return node;
+        }
     }
-    return NULL;
 }
 
-//terminal... operators like * + ( ) ,
-lexemes::node * parser::c_operator(int n, string w){
+//convenience function that checks operators like: * + ( ) ,
+parsenode * parser::c_operator(int n, string w){
     LOG_DEBUG("Parser: try operator '"<<w<<"' "<<n);
     if (c_type(n,tokentypes::OPERATOR) && c_string(n,w)) {
-        return new lexemes::node();
+        parsenode * node = new parsenode(n,lexemetypes::OPERATOR,1);
+        node->value = w;
+        return node;
     }
     return NULL;
 }

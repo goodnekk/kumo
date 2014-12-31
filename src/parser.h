@@ -1,4 +1,5 @@
 #pragma once
+
 #include "token.h"
 #include "tokentypes.h"
 
@@ -6,8 +7,8 @@
 #include "lexemetypes.h"
 
 #include "log.h"
+
 #include <vector>
-#include <string>
 
 using namespace std;
 
@@ -18,36 +19,43 @@ class parser{
         //recursive analysis
         //non terminals
         token getToken(int n);
+
         parsenode * codeblock(int n);
+
         parsenode * statement(int n);
+        parsenode * assignment(int n);
+        //function calls
+        parsenode * call(int n);
+        parsenode * argument_list(int n);
 
-            parsenode * assignment(int n);
-
-            parsenode * call(int n);
-            parsenode * argumentlist(int n);
-
-            parsenode * expression(int n);
-            parsenode * mathexpression(int n);
-                parsenode * addsub(int n);
-                parsenode * multdiv(int n);
-                parsenode * parenthesized(int n);
-                parsenode * operand(int n);
-
-            parsenode * textexpression(int n);
-            parsenode * booleanexpression(int n);
-
+        //expressions
+        parsenode * expression(int n);
             parsenode * declaration(int n);
-            parsenode * nameslist(int n);
+                parsenode * names_list(int n);
+
+            parsenode * math_expression(int n);
+                parsenode * add_sub(int n);
+                parsenode * mult_div(int n);
+                parsenode * math_operand(int n);
+                parsenode * parenthesized(int n);
+
+            parsenode * text_expression(int n);
+                parsenode * text_add(int n);
+                parsenode * text_operand(int n);
+
+            parsenode * boolean_expression(int n);
+                parsenode * boolean_compare(int n);
+                parsenode * boolean_operand(int n);
+
 
         //terminals
+        parsenode * variable(int n);
         parsenode * text(int n);
         parsenode * number(int n);
-        parsenode * variable(int n);
+        parsenode * boolean(int n);
 
-        //high level compare functions
-        parsenode * name(int n);
+        //convenience functions
         parsenode * c_operator(int n, string w);
-        //low level compare functions
         bool c_type(int n, int t);
         bool c_string(int n,string w);
         bool c_endofline(int n);
