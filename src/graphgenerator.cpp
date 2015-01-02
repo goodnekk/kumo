@@ -43,14 +43,8 @@ int graphgenerator::analyse(parsenode * node){
         case lexemetypes::ARGUMENTLIST:
             new_label("arguments");
             break;
-        case lexemetypes::ARITHMETIC:
+        case lexemetypes::EXPRESSION:
             new_label("arithmatic:"+(node->value));
-            break;
-        case lexemetypes::TEXTOPERATION:
-            new_label("textoperation:"+(node->value));
-            break;
-        case lexemetypes::BOOLEANOPERATION:
-            new_label("booleanoperation"+(node->value));
             break;
         default:
             LOG_DEBUG("Graph: unknow lexemetype: ");

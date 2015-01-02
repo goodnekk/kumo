@@ -34,8 +34,9 @@ int main(int argc, char* argv[]) {
 	//generator g;
 	// /vm v;
 
-	l.lex(program); //should be 5
-	g.generate(d.desuger(p.parse(l.getTokens())));
+	l.lex(program);
+	l.getTokens();
+	//g.generate(d.desuger(p.parse(l.getTokens())));
 	//v.load(g.generate(p.parse(l.getTokens())));
 	//v.run();
 

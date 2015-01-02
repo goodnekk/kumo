@@ -268,7 +268,7 @@ parsenode * parser::logical_expression(int n, int op){
         if(b){
             parsenode * c = logical_expression(n+(a->length)+1,op);
             if(c){
-                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
+                parsenode * node = new parsenode(n,lexemetypes::EXPRESSION,1);
                 node->value = operators[op];
                 node->push(a);
                 node->push(c);

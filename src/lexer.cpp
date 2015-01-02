@@ -32,8 +32,18 @@ bool lexer::isWhitespace(string c){
 }
 
 bool lexer::isOperator(string c){
-	const static string operators[12] = {"+","-","*","/","(",")","{","}","=",",","<",">"};
-	for(int i=0; i<12; i++){
+	const static string operators[9] = {"+","-","*","/","=","<",">","&","|"};
+	for(int i=0; i<9; i++){
+		if (c==operators[i]){
+			return true;
+		}
+	}
+	return false;
+}
+
+bool lexer::isSeparator(string c){
+	const static string operators[5] = {"(",")","{","}",","};
+	for(int i=0; i<5; i++){
 		if (c==operators[i]){
 			return true;
 		}
@@ -93,8 +103,13 @@ void lexer::analize(){
 			step();
 		}
 		else if(isOperator(character)){
+			currentToken+=character;
+			state =4 ;
+			step();
+		}
+		else if(isSeparator(character)){
 			currentToken=character;
-			pushToken(tokentypes::OPERATOR);
+			pushToken(tokentypes::SEPARATOR);
 			step();
 		}
 		else if(isNewline(character)){
@@ -148,6 +163,19 @@ void lexer::analize(){
     	analize();
     	return;
     }
+
+	//operator state
+	if(state==4){
+		if(isOperator(character)){
+			currentToken+=character;
+			step();
+		}
+		else{
+			pushToken(tokentypes::OPERATOR);
+		}
+		analize();
+		return;
+	}
 }
 
 

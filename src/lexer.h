@@ -29,6 +29,7 @@ class lexer{
 		bool isNumber(string c);
 		bool isWhitespace(string c);
 		bool isOperator(string c);
+		bool isSeparator(string c);
 		bool isNewline(string c);
 
 	public:

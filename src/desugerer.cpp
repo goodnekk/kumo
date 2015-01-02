@@ -26,11 +26,11 @@ parsenode * desugerer::analyse(parsenode * node){
     parsenode * variable = NULL;
     parsenode * arguments = NULL;
 
-    if(t==lexemetypes::ARITHMETIC){
+    if(t==lexemetypes::EXPRESSION){
         variable = new parsenode(node->token,lexemetypes::VARIABLE,1);
         variable->value = node->value;
 
-        arguments = new parsenode(node->token,lexemetypes::ARGUMENTLIST,1);
+        arguments = new parsenode(node->token,lexemetypes::EXPRESSION,1);
         for(int i=0; i < node->children.size(); i++){
             arguments->push(node->children.at(i));
         }
