@@ -15,7 +15,7 @@ using namespace std;
 class parser{
     private:
         vector<token> tokens;
-        
+
         //recursive analysis
         //non terminals
         token getToken(int n);
@@ -28,25 +28,15 @@ class parser{
         parsenode * call(int n);
         parsenode * argument_list(int n);
 
+
         //expressions
+
         parsenode * expression(int n);
             parsenode * declaration(int n);
                 parsenode * names_list(int n);
-
-            parsenode * math_expression(int n);
-                parsenode * add_sub(int n);
-                parsenode * mult_div(int n);
-                parsenode * math_operand(int n);
-                parsenode * parenthesized(int n);
-
-            parsenode * text_expression(int n);
-                parsenode * text_add(int n);
-                parsenode * text_operand(int n);
-
-            parsenode * boolean_expression(int n);
-                parsenode * boolean_compare(int n);
-                parsenode * boolean_operand(int n);
-
+            parsenode * logical_expression(int n, int op);
+                parsenode * logical_operand(int n);
+                parsenode * logical_parenthesized(int n);
 
         //terminals
         parsenode * variable(int n);

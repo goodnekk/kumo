@@ -150,6 +150,7 @@ parsenode * parser::argument_list(int n){
 }
 
 //expression
+
 parsenode * parser::expression(int n){
     LOG_DEBUG("Parser: try expression "<<n);
     parsenode * a = declaration(n);
@@ -157,19 +158,9 @@ parsenode * parser::expression(int n){
         return a;
     }
 
-    parsenode * b = boolean_expression(n);
+    parsenode * b = logical_expression(n,0);
     if(b){
         return b;
-    }
-
-    parsenode * c = math_expression(n);
-    if(c){
-        return c;
-    }
-    //TODO: if c is terminal, check for text alternative
-    parsenode * d = text_expression(n);
-    if(d){
-        return d;
     }
 
     return NULL;
@@ -259,33 +250,26 @@ parsenode * parser::names_list(int n){
     return node;
 }
 
-//mathexpression
-parsenode * parser::math_expression(int n){
-    LOG_DEBUG("Parser: try math expression "<<n);
-
-    parsenode * a = add_sub(n);
-    if(a){
-        return a;
-    }
-
-    return NULL;
-}
-
-parsenode * parser::add_sub(int n){
+parsenode * parser::logical_expression(int n, int op){
     LOG_DEBUG("Parser: try add/subtract "<<n);
-    parsenode * a = mult_div(n);
+
+    //recursively loop through all possible math operators
+    string operators[5] = {"+","-","/","*","&"};
+
+    parsenode * a = NULL;
+    if(op<4){
+        a = logical_expression(n,op+1);
+    } else {
+        a = logical_operand(n);
+    }
+
     if(a){
-        string op = "+";
-        parsenode * b = c_operator(n+(a->length),op);
-        if(!b){
-            op = "-";
-            b = c_operator(n+(a->length),op);
-        }
+        parsenode * b = c_operator(n+(a->length),operators[op]);
         if(b){
-            parsenode * c = add_sub(n+(a->length)+1);
+            parsenode * c = logical_expression(n+(a->length)+1,op);
             if(c){
                 parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
-                node->value = op;
+                node->value = operators[op];
                 node->push(a);
                 node->push(c);
                 return node;
@@ -296,32 +280,7 @@ parsenode * parser::add_sub(int n){
     return NULL;
 }
 
-parsenode * parser::mult_div(int n){
-    LOG_DEBUG("Parser: try multiply/divide "<<n);
-    parsenode * a = math_operand(n);
-    if(a){
-        string op = "*";
-        parsenode * b = c_operator(n+(a->length),op);
-        if(!b){
-            op = "/";
-            b = c_operator(n+(a->length),op);
-        }
-        if(b){
-            parsenode * c = mult_div(n+(a->length)+1);
-            if(c){
-                parsenode * node = new parsenode(n,lexemetypes::ARITHMETIC,1);
-                node->value = op;
-                node->push(a);
-                node->push(c);
-                return node;
-            }
-        }
-        return a;
-    }
-    return NULL;
-}
-
-parsenode * parser::math_operand(int n){
+parsenode * parser::logical_operand(int n){
     LOG_DEBUG("Parser: try operand "<<n);
     parsenode * a = number(n);
     if(a){
@@ -338,18 +297,18 @@ parsenode * parser::math_operand(int n){
         return c;
     }
 
-    parsenode * d = parenthesized(n);
+    parsenode * d = logical_parenthesized(n);
     if(d){
         return d;
     }
     return NULL;
 }
 
-parsenode * parser::parenthesized(int n){
+parsenode * parser::logical_parenthesized(int n){
     LOG_DEBUG("Parser: try parenthesized "<<n);
     parsenode * a = c_operator(n,"(");
     if(a){
-        parsenode * b = add_sub(n+1);
+        parsenode * b = logical_expression(n+1,0);
         if(b){
             parsenode * c = c_operator(n+1+b->length,")");
             if(c){
@@ -361,99 +320,6 @@ parsenode * parser::parenthesized(int n){
                 return NULL;
             }
         }
-    }
-    return NULL;
-}
-
-parsenode * parser::text_expression(int n){
-    LOG_DEBUG("Parser: try text expression "<<n);
-    parsenode * a = text_add(n);
-    if(a){
-        return a;
-    }
-    return NULL;
-}
-
-parsenode * parser::text_add(int n){
-    parsenode * a = text_operand(n);
-    if(a){
-        string op = "+";
-        parsenode * b = c_operator(n+(a->length),op);
-        if(b){
-            parsenode * c = text_add(n+(a->length)+1);
-            if(c){
-                parsenode * node = new parsenode(n,lexemetypes::TEXTOPERATION,1);
-                node->push(a);
-                node->push(c);
-                return node;
-            } else {
-                //TODO: expected text error
-                delete b;
-            }
-        }
-        return a;
-    }
-}
-
-parsenode * parser::text_operand(int n){
-    parsenode * a = text(n);
-    if(a){
-        return a;
-    }
-
-    parsenode * b = number(n);
-    if(b){
-        return b;
-    }
-
-    parsenode * c = call(n);
-    if(c){
-        return c;
-    }
-
-    parsenode * d = variable(n);
-    if(d){
-        return d;
-    }
-    return NULL;
-}
-
-parsenode * parser::boolean_expression(int n){
-    LOG_DEBUG("Parser: try boolean expression "<<n);
-    parsenode * a = boolean_compare(n);
-    if(a){
-        return a;
-    }
-    return NULL;
-}
-
-parsenode * parser::boolean_compare(int n){
-    LOG_DEBUG("Parser: try boolean compare "<<n);
-    parsenode * a = boolean_operand(n);
-    if(a){
-        parsenode * b = c_operator(n+1,"=");
-        parsenode * c = c_operator(n+2,"=");
-        if(b&&c){
-            delete b;
-            delete c;
-            parsenode * d = boolean_compare(n+3);
-            if(d){
-                parsenode * node = new parsenode(n,lexemetypes::BOOLEANOPERATION,2);
-                node->value = "==";
-                node->push(a);
-                node->push(d);
-                return node;
-            }
-        }
-        return a;
-    }
-    return NULL;
-}
-
-parsenode * parser::boolean_operand(int n){
-    parsenode * a = boolean(n);
-    if(a){
-        return a;
     }
     return NULL;
 }
