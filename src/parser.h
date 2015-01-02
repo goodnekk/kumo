@@ -38,14 +38,18 @@ class parser{
                 parsenode * logical_operand(int n);
                 parsenode * logical_parenthesized(int n);
 
+
         //terminals
         parsenode * variable(int n);
-        parsenode * text(int n);
-        parsenode * number(int n);
-        parsenode * boolean(int n);
+
+        parsenode * constant(int n);
+            parsenode * text(int n);
+            parsenode * number(int n);
+            parsenode * boolean(int n);
 
         //convenience functions
         parsenode * c_operator(int n, string w);
+        bool c_separator(int n, string w);
         bool c_type(int n, int t);
         bool c_string(int n,string w);
         bool c_endofline(int n);

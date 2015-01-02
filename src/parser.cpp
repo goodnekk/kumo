@@ -89,10 +89,9 @@ parsenode * parser::call(int n){
     LOG_DEBUG("Parser: try call "<<n);
     //check foo(
     parsenode * a = variable(n);
-    parsenode * b = c_operator(n+1,"(");
+    bool b = c_separator(n+1,"(");
 
     if(a&&b){
-        delete b; //don't need it anymore
         parsenode * node = new parsenode(n,lexemetypes::CALL,2);
         node->push(a);
 
@@ -107,9 +106,8 @@ parsenode * parser::call(int n){
             argumentlength = (c->length);
         }
 
-        parsenode * d = c_operator(n+2+argumentlength,")");
+        bool d = c_separator(n+2+argumentlength,")");
         if(d){
-            delete d; //don't need it anymore
             return node;
         } else {
             delete node;
@@ -133,9 +131,8 @@ parsenode * parser::argument_list(int n){
             node->push(a);
 
             //if we find comma increse lenght
-            parsenode * b = c_operator(n+(a->length), ",");
+            bool b = c_separator(n+(a->length), ",");
             if(b){
-                delete b; //don't need it anymore
                 node->length+=1;
                 n+=1+(a->length);
             } else {//if not end list and return
@@ -171,7 +168,7 @@ parsenode * parser::declaration(int n){
 
     bool paren = false;
 
-    parsenode * a = c_operator(n, "(");
+    bool a = c_separator(n, "(");
     parsenode * b = names_list(n+1);
     if(a){
         if(b){
@@ -181,27 +178,25 @@ parsenode * parser::declaration(int n){
             delete b;
         }
 
-        parsenode * c = c_operator(n, ")");
+        bool c = c_separator(n, ")");
         if(c){
             n+=1;
             paren = true;
         } else {
             //TODO: Expected paren
-            delete a;
             delete b;
             return NULL;
         }
     } else {
-        delete a;
         delete b;
         b = NULL;
     }
 
-    parsenode * d = c_operator(n, "{");
+    bool d = c_separator(n, "{");
     if(d){
         parsenode * e = codeblock(n+1);
         if(e){
-            parsenode * f = c_operator(n+1+(e->length), "}");
+            bool f = c_separator(n+1+(e->length), "}");
             if(f){
                 int length = 2;
                 if(paren){length+=2;}
@@ -234,9 +229,8 @@ parsenode * parser::names_list(int n){
             node->push(a);
 
             //if we find comma increse lenght
-            parsenode * b = c_operator(n+(a->length), ",");
+            bool b = c_separator(n+(a->length), ",");
             if(b){
-                delete b; //don't need it anymore
                 node->length+=1;
                 n+=1+(a->length);
             } else {//if not end list and return
@@ -254,7 +248,7 @@ parsenode * parser::logical_expression(int n, int op){
     LOG_DEBUG("Parser: try add/subtract "<<n);
 
     //recursively loop through all possible math operators
-    string operators[5] = {"+","-","/","*","&"};
+    string operators[5] = {"+","-","/","*","=="};
 
     parsenode * a = NULL;
     if(op<4){
@@ -282,7 +276,7 @@ parsenode * parser::logical_expression(int n, int op){
 
 parsenode * parser::logical_operand(int n){
     LOG_DEBUG("Parser: try operand "<<n);
-    parsenode * a = number(n);
+    parsenode * a = constant(n);
     if(a){
         return a;
     }
@@ -306,11 +300,11 @@ parsenode * parser::logical_operand(int n){
 
 parsenode * parser::logical_parenthesized(int n){
     LOG_DEBUG("Parser: try parenthesized "<<n);
-    parsenode * a = c_operator(n,"(");
+    bool a = c_separator(n,"(");
     if(a){
         parsenode * b = logical_expression(n+1,0);
         if(b){
-            parsenode * c = c_operator(n+1+b->length,")");
+            bool c = c_separator(n+1+b->length,")");
             if(c){
                 b->length+=2;
                 return b;
@@ -335,6 +329,24 @@ parsenode * parser::variable(int n){
     return NULL;
 }
 
+//constants
+parsenode * parser::constant(int n){
+    parsenode * a = text(n);
+    if(a){
+        return a;
+    }
+
+    parsenode * b = number(n);
+    if(b){
+        return b;
+    }
+
+    parsenode * c = boolean(n);
+    if(c){
+        return c;
+    }
+
+}
 //constant text:    "hello world"    "how are ya?"
 parsenode * parser::text(int n){
     LOG_DEBUG("Parser: try string "<<n);
@@ -378,6 +390,15 @@ parsenode * parser::c_operator(int n, string w){
         return node;
     }
     return NULL;
+}
+
+//convenience function that checks operators like: * + ( ) ,
+bool parser::c_separator(int n, string w){
+    LOG_DEBUG("Parser: try separator '"<<w<<"' "<<n);
+    if (c_type(n,tokentypes::SEPARATOR) && c_string(n,w)) {
+        return true;
+    }
+    return false;
 }
 
 //convenience function that checks type of a token
