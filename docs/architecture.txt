@@ -1,0 +1,14 @@
+kumo architecture
+=================
+
+lexer
+  |
+parser <- parsing constructs
+  |
+desugar
+  |
+generator
+  |
+assembler
+  |
+virtual machine

@@ -1,6 +1,6 @@
 #include "log.h"
 #include "lexer.h"
-#include "parser.h"
+#include "preparser.h"
 #include "graphgenerator.h"
 //#include "generator.h"
 //#include "vm.h"
@@ -27,13 +27,13 @@ int main(int argc, char* argv[]) {
 
 	//start compilation
 	lexer l;
-	parser p;
-	graphgenerator g;
+	preparser p;
+	//graphgenerator g;
 	//generator g;
 	// /vm v;
 
 	l.lex(program); //should be 5
-	g.generate(p.parse(l.getTokens()));
+	p.preparse(l.getTokens());
 	//v.load(g.generate(p.parse(l.getTokens())));
 	//v.run();
 

@@ -1,4 +1,4 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/stack.o $(bin)/vm.o $(bin)/generator.o $(bin)/graphgenerator.o $(bin)/variable.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/stack.o $(bin)/vm.o $(bin)/preparser.o $(bin)/generator.o $(bin)/graphgenerator.o $(bin)/variable.o
 
 bin = ../bin
 flags = -g -std=c++11
@@ -21,6 +21,9 @@ $(bin)/program.o: program.cpp
 
 $(bin)/parser.o: parser.cpp
 	g++ -c parser.cpp $(flags) -o $(bin)/parser.o
+
+$(bin)/preparser.o: preparser.cpp
+	g++ -c preparser.cpp $(flags) -o $(bin)/preparser.o
 
 $(bin)/vm.o: vm.cpp
 	g++ -c vm.cpp $(flags) -o $(bin)/vm.o

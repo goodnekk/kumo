@@ -15,7 +15,7 @@ using namespace std;
 class parser{
     private:
         vector<token> tokens;
-
+        
         //recursive analysis
         //non terminals
         token getToken(int n);
