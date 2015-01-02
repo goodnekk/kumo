@@ -61,7 +61,23 @@ html, body {
         <div>
             <u>ABOUT THE LANGUAGE</u><br><br>
             Kumo is a language designed to make things happen.
-            Verbs are best for expressing actions, that is why in kumo allmost everything is a function.
+            Verbs are best for expressing actions, that is why in kumo allmost everything is a function.<br><br>
+            For example, all math is done using functions. If you prefer you can use simple infix notation but this is converted during compilation.
+            These two lines are equivalent:<br><br>
+            <div class="code">
+                <a class="var">a</a> = <a class="func">+</a>(<a class="num">55</a>,<a class="num">45</a>)<br>
+                <a class="var">a</a> = <a class="num">55</a><a class="func">+</a><a class="num">45</a>
+            </div><br>
+            This makes operator overloading and extention very simple. Just define the function using an operator:<br><br>
+            <div class="code">
+                <a class="func">^</a> = (<a class="var">a</a>,<a class="var">b</a>){<br>
+                    &nbsp;&nbsp;<a class="func">repeat</a>(<a class="var">b</a>-<a class="num">1</a>,{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<a class="var">a</a> = <a class="var">a</a> <a class="func">*</a> <a class="var">a</a><br>
+                    &nbsp;&nbsp;})<br>
+                    &nbsp;&nbsp;<a class="func">return</a>(<a class="var">a</a>)<br>
+                }<br><br>
+                <a class="var">square</a> = <a class="num">5</a><a class="func">^</a><a class="num">2</a>
+            </div><br><br>
             Functions can be passed around as arguments:<br><br>
             <div class="code">
                 <a class="var">a</a> = <a class="num">10</a><br><br>
@@ -72,7 +88,7 @@ html, body {
                 <a class="pa">}</a><br><br>
 
                 <a class="func">while</a>(<a class="var">a</a>><a class="num">0</a>, <a class="func">subtract</a>)
-            </div>
+            </div><br><br><br><br>
 
         </div>
     </div>
