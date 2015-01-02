@@ -89,6 +89,9 @@ parsenode * parser::call(int n){
     LOG_DEBUG("Parser: try call "<<n);
     //check foo(
     parsenode * a = variable(n);
+    if(!a){
+        a = v_operator(n); //operator as variable
+    }
     bool b = c_separator(n+1,"(");
 
     if(a&&b){
@@ -379,6 +382,16 @@ parsenode * parser::boolean(int n){
             return node;
         }
     }
+}
+
+parsenode * parser::v_operator(int n){
+    LOG_DEBUG("Parser: try operator as variable "<<n);
+    if (c_type(n,tokentypes::OPERATOR)) {
+        parsenode * node = new parsenode(n,lexemetypes::VARIABLE,1);
+        node->value = getToken(n).tokenstring;
+        return node;
+    }
+    return NULL;
 }
 
 //convenience function that checks operators like: * + ( ) ,

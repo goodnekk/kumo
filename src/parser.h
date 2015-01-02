@@ -38,7 +38,6 @@ class parser{
                 parsenode * logical_operand(int n);
                 parsenode * logical_parenthesized(int n);
 
-
         //terminals
         parsenode * variable(int n);
 
@@ -47,6 +46,7 @@ class parser{
             parsenode * number(int n);
             parsenode * boolean(int n);
 
+        parsenode * v_operator(int n);
         //convenience functions
         parsenode * c_operator(int n, string w);
         bool c_separator(int n, string w);
