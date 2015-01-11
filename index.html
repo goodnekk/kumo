@@ -1,45 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>hello kumo</title>
-<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
-<style>
-html, body {
-    margin: 0;
-    background-color: #F2F2F2;
-    color: #201D1D;
-    font-size: 12pt;
-    font-family: 'Ubuntu Mono';
-}
-
-#container{
-    max-width: 34em;
-    margin: 0 auto;
-    margin-top: 5em;
-    padding-right: 1em;
-    padding-left: 1em;
-}
-
-.code{
-    padding:2em;
-    background-color: #201D1D;
-    color: #F2F2F2;
-}
-
-.var{
-    color: #83ABDB;
-}
-
-.func{
-    color: #8CC63E;
-}
-
-.num{
-    color: #E4E542;
-}
+    <title>hello kumo</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700' rel='stylesheet' type='text/css'>
+    <style>
+    html, body {
+        margin: 0;
+        background-color: #F2F2F2;
+        color: #201D1D;
+        font-size: 12pt;
+        font-family: 'Ubuntu Mono';
+    }
 
 
-</style>
+    @media (max-width: 400px) {
+        #container{
+            max-width: 34em;
+            margin: 0 auto;
+            padding-right: 1em;
+            padding-left: 1em;
+        }
+    }
+
+    @media all and (min-width: 400px) {
+        #container{
+            max-width: 34em;
+            margin: 0 auto;
+            margin-top: 5em;
+            padding-right: 1em;
+            padding-left: 1em;
+        }
+    }
+
+
+    .code{
+        padding:2em;
+        background-color: #201D1D;
+        color: #F2F2F2;
+    }
+
+    .var{
+        color: #83ABDB;
+    }
+
+    .func{
+        color: #8CC63E;
+    }
+
+    .num{
+        color: #E4E542;
+    }
+
+
+    </style>
 
 </head>
 <body>
