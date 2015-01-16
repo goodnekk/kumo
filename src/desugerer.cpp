@@ -27,17 +27,20 @@ parsenode * desugerer::analyse(parsenode * node){
     parsenode * arguments = NULL;
 
     if(t==lexemetypes::EXPRESSION){
-        variable = new parsenode(node->token,lexemetypes::VARIABLE,1);
-        variable->value = node->value;
+        //variable = new parsenode(node->token,lexemetypes::VARIABLE,1);
+        //variable->value = node->value;
 
-        arguments = new parsenode(node->token,lexemetypes::ARGUMENTLIST,1);
+        //arguments = new parsenode(node->token,lexemetypes::ARGUMENTLIST,1);
         for(int i=0; i < node->children.size(); i++){
             arguments->push(node->children.at(i));
         }
 
         replace = new parsenode(node->token,lexemetypes::CALL,0);
-        replace->push(variable);
-        replace->push(arguments);
+        replace->value = node->value;
+        //replace->push(arguments);
+        for(int i=0; i < node->children.size(); i++){
+            replace->push(node->children.at(i));
+        }
 
     }
     return replace;

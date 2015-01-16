@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "desugerer.h"
 #include "graphgenerator.h"
-//#include "generator.h"
+#include "bytecodegenerator.h"
 //#include "vm.h"
 
 #include <string>
@@ -31,11 +31,11 @@ int main(int argc, char* argv[]) {
 	parser p;
 	desugerer d;
 	graphgenerator g;
-	//generator g;
+	//bytecodegenerator g;
 	// /vm v;
 
 	l.lex(program);
-	g.generate(d.desuger(p.parse(l.getTokens())));
+	g.generate(p.parse(l.getTokens()));
 	//v.load(g.generate(p.parse(l.getTokens())));
 	//v.run();
 

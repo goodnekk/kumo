@@ -95,8 +95,9 @@ parsenode * parser::call(int n){
     bool b = c_separator(n+1,"(");
 
     if(a&&b){
-        parsenode * node = new parsenode(n,lexemetypes::CALL,2);
-        node->push(a);
+        parsenode * node = new parsenode(n,lexemetypes::CALL,3);
+        node->value = a->value;
+        delete a;
 
         //keeps track of length of argument list
         int argumentlength = 0;
@@ -105,8 +106,12 @@ parsenode * parser::call(int n){
         parsenode * c = argument_list(n+2);
         if(c){
             //add arguments and update argumentlist
-            node->push(c);
+            for(int i=0; i < c->children.size(); i++){
+                node->push(c->children.at(i));
+            }
+            //node->push(c);
             argumentlength = (c->length);
+            delete c;
         }
 
         bool d = c_separator(n+2+argumentlength,")");
@@ -265,7 +270,7 @@ parsenode * parser::logical_expression(int n, int op){
         if(b){
             parsenode * c = logical_expression(n+(a->length)+1,op);
             if(c){
-                parsenode * node = new parsenode(n,lexemetypes::EXPRESSION,1);
+                parsenode * node = new parsenode(n,lexemetypes::CALL,1);
                 node->value = operators[op];
                 node->push(a);
                 node->push(c);

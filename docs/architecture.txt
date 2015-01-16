@@ -1,14 +1,14 @@
 kumo architecture
 =================
 
-lexer
-  |
-parser <- parsing constructs
-  |
-desugar
-  |
-generator
-  |
-assembler
-  |
-virtual machine
+            lexer
+              ↓
+            parser ← parsing constructs
+              ↓
+           de-sugar
+              ↓
+           generate
+              ↓
+           assemble
+              ↓
+        virtual machine

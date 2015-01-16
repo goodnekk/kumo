@@ -35,7 +35,7 @@ int graphgenerator::analyse(parsenode * node){
             new_label("number: "+(node->value));
             break;
         case lexemetypes::CALL:
-            new_label("call");
+            new_label("call: "+(node->value));
             break;
         case lexemetypes::VARIABLE:
             new_label("variable: "+(node->value));
