@@ -1,12 +1,23 @@
 #pragma once
+
 #include <string>
+#include <sstream>
+
 #include "log.h"
 
 using namespace std;
 
+enum class variabletypes {
+    EMPTY,
+    NUMBER,
+    TEXT,
+    BOOLEAN,
+    POINTER
+};
+
 class variable{
 private:
-    int type;
+    variabletypes type;
 
     float number;
     string text;
@@ -14,12 +25,6 @@ private:
 
 public:
     variable();
-    variable(int n);
-    variable(bool n);
-    variable(string n);
-    int get();
-    string get_text();
-    bool get_boolean();
-
-    int get_type();
+    variable(variabletypes t, string s);
+    variabletypes get_type();
 };

@@ -1,4 +1,4 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/program.o $(bin)/parser.o $(bin)/desugerer.o $(bin)/stack.o $(bin)/vm.o $(bin)/bytecodegenerator.o $(bin)/graphgenerator.o $(bin)/variable.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/bytecodegenerator.o $(bin)/graphgenerator.o $(bin)/variable.o
 
 bin = ../bin
 flags = -g -std=c++11
@@ -16,20 +16,8 @@ $(bin)/lexer.o: lexer.cpp
 $(bin)/token.o: token.cpp
 	g++ -c token.cpp $(flags) -o $(bin)/token.o
 
-$(bin)/program.o: program.cpp
-	g++ -c program.cpp $(flags) -o $(bin)/program.o
-
 $(bin)/parser.o: parser.cpp
 	g++ -c parser.cpp $(flags) -o $(bin)/parser.o
-
-$(bin)/desugerer.o: desugerer.cpp
-	g++ -c desugerer.cpp $(flags) -o $(bin)/desugerer.o
-
-$(bin)/vm.o: vm.cpp
-	g++ -c vm.cpp $(flags) -o $(bin)/vm.o
-
-$(bin)/stack.o: stack.cpp
-	g++ -c stack.cpp $(flags) -o $(bin)/stack.o
 
 $(bin)/bytecodegenerator.o: bytecodegenerator.cpp
 	g++ -c bytecodegenerator.cpp $(flags) -o $(bin)/bytecodegenerator.o

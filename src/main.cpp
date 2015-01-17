@@ -1,7 +1,6 @@
 #include "log.h"
 #include "lexer.h"
 #include "parser.h"
-#include "desugerer.h"
 #include "graphgenerator.h"
 #include "bytecodegenerator.h"
 //#include "vm.h"
@@ -29,9 +28,8 @@ int main(int argc, char* argv[]) {
 	//start compilation
 	lexer l;
 	parser p;
-	desugerer d;
-	graphgenerator g;
-	//bytecodegenerator g;
+	//graphgenerator g;
+	bytecodegenerator g;
 	// /vm v;
 
 	l.lex(program);
