@@ -57,18 +57,7 @@ void bytecodegenerator::constant(parsenode * node){
 
 void bytecodegenerator::loadStdlib(){
     libs a;
-
-    templateTable.insert(a.get().begin(), a.get().end());
-
-    /*
-    templateTable["+"] = {bytecodes::ADD};
-    templateTable["-"] = {bytecodes::SUB};
-    templateTable["*"] = {bytecodes::MULT};
-    templateTable["/"] = {bytecodes::DIV};
-
-    templateTable["say"] = {bytecodes::V_CALL, 0};
-    templateTable["ask"] = {bytecodes::V_CALL, 1};
-    */
+    templateTable = a.get();
 }
 
 void bytecodegenerator::pushCode(int command){
