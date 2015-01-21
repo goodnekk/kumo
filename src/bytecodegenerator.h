@@ -22,7 +22,9 @@ using namespace std;
 class bytecodegenerator{
 private:
     vector <variable> constants;
-    vector <string> variables;
+
+    //vector <string> variables;
+
     map <string, vector <int> > templateTable;
 
     vector <int> code;

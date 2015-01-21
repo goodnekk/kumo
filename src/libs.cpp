@@ -23,7 +23,6 @@ libs::libs(){
 
     liblist["ask"] = {bytecodes::V_CALL, 1};
     virtuals.push_back(inout::ask);
-
 }
 
 map <string, vector <int> > libs::get(){
