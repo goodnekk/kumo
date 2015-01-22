@@ -25,6 +25,11 @@ private:
 
 public:
     variable();
+    variable(float n);
+
     variable(variabletypes t, string s);
     variabletypes get_type();
+    float get_number();
+
+    void say();
 };

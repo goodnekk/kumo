@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "graphgenerator.h"
 #include "bytecodegenerator.h"
-//#include "vm.h"
+#include "vm.h"
 
 #include <string>
 #include <sstream>
@@ -30,12 +30,11 @@ int main(int argc, char* argv[]) {
 	parser p;
 	//graphgenerator g;
 	bytecodegenerator g;
-	// /vm v;
+	vm v;
 
 	l.lex(program);
-	g.generate(p.parse(l.getTokens()));
-	//v.load(g.generate(p.parse(l.getTokens())));
-	//v.run();
+	v.load(g.generate(p.parse(l.getTokens())));
+	v.run();
 
 	return 0;
 }

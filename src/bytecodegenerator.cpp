@@ -1,11 +1,14 @@
 #include "bytecodegenerator.h"
 
-void bytecodegenerator::generate(parsenode * root){
+program bytecodegenerator::generate(parsenode * root){
     loadStdlib();
     analize(root);
-    for(int i=0; i < code.size(); i++){
-        LOG_DEBUG("Generator: "<<code.at(i));
-    }
+    pushCode(bytecodes::END);
+    program p;
+    p.code = code;
+    p.constants = constants;
+
+    return p;
 }
 
 void bytecodegenerator::analize(parsenode * node){
@@ -52,7 +55,7 @@ void bytecodegenerator::constant(parsenode * node){
     }
     constants.push_back(variable(t, node->value));
     pushCode(constants.size()-1);
-    LOG_DEBUG("Constant["<<constants.size()-1<<"] = "<<node->value);
+    LOG_DEBUG("Generator: Constant["<<constants.size()-1<<"] = "<<node->value);
 }
 
 void bytecodegenerator::loadStdlib(){
@@ -61,6 +64,7 @@ void bytecodegenerator::loadStdlib(){
 }
 
 void bytecodegenerator::pushCode(int command){
+    LOG_DEBUG("Generator: "<<command);
     code.push_back(command);
 }
 

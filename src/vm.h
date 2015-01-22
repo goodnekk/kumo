@@ -3,24 +3,26 @@
 
 #include <vector>
 #include "variable.h"
+#include "bytecodes.h"
+#include "program.h"
 
 using namespace std;
 
 class vm {
 private:
 
-    vector <int> program;
-    int programPoint; //points to the current operation
+    vector <int> code;
+    int codePoint; //points to the current operation
 
     variable stack[100];
     int stackPoint;
 
     variable ram[100]; //random acces storage for variables
-
-
     int functionPoint; //points to the current function
 
+    vector <variable> constants;
+
 public:
-    void load(vector <int> p);
+    void load(program p);
     void run();
 };

@@ -5,6 +5,8 @@
 
 #include "parsenode.h"
 #include "variable.h"
+#include "program.h"
+
 #include "log.h"
 
 #include "libs.h"
@@ -38,6 +40,6 @@ private:
     void pushCode(vector <int> commands);
 
 public:
-    void generate(parsenode * root);
+    program generate(parsenode * root);
 
 };

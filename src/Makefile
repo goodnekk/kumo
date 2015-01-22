@@ -1,4 +1,4 @@
-objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/bytecodegenerator.o $(bin)/graphgenerator.o $(bin)/variable.o $(bin)/libs.o
+objects = $(bin)/main.o $(bin)/lexer.o $(bin)/token.o $(bin)/parser.o $(bin)/bytecodegenerator.o $(bin)/graphgenerator.o $(bin)/variable.o $(bin)/libs.o $(bin)/vm.o
 
 bin = ../bin
 flags = -g -std=c++11
@@ -30,6 +30,9 @@ $(bin)/variable.o: variable.cpp
 
 $(bin)/libs.o: libs.cpp
 	g++ -c libs.cpp $(flags) -o $(bin)/libs.o
+
+$(bin)/vm.o: vm.cpp
+	g++ -c vm.cpp $(flags) -o $(bin)/vm.o
 
 test:
 	$(bin)/kumo ../examples/test.kmo
