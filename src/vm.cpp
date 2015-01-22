@@ -58,7 +58,7 @@ void vm::run(){
                 break;
             case bytecodes::V_CALL:
                 codePoint++;
-                library.call(code[codePoint]);
+                library.call(code[codePoint], stack, stackPoint);
                 break;
             case bytecodes::ISTRUE:
                 break;

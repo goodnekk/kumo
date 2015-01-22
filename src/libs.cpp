@@ -1,11 +1,12 @@
 #include "libs.h"
 
 namespace inout{
-    void say(){
+    void say(variable * s, int sp){
         LOG("say");
+        s[sp].say();
     }
 
-    void ask(){
+    void ask(variable * s, int sp){
         LOG("ask");
     }
 }
@@ -29,6 +30,6 @@ map <string, vector <int> > libs::get(){
     return liblist;
 }
 
-void libs::call(int n){
-    virtuals[n]();
+void libs::call(int n, variable * s, int sp){
+    virtuals[n](s,sp);
 }
