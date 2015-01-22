@@ -2,10 +2,10 @@
 
 void vm::load(program p){
     code = p.code;
-    codePoint = -1;
-
     constants = p.constants;
+    library = p.library;
 
+    codePoint = -1;
     stackPoint = -1;
 }
 
@@ -58,6 +58,7 @@ void vm::run(){
                 break;
             case bytecodes::V_CALL:
                 codePoint++;
+                library.call(code[codePoint]);
                 break;
             case bytecodes::ISTRUE:
                 break;

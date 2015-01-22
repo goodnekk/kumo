@@ -7,7 +7,7 @@ program bytecodegenerator::generate(parsenode * root){
     program p;
     p.code = code;
     p.constants = constants;
-
+    p.library = library;
     return p;
 }
 
@@ -59,8 +59,7 @@ void bytecodegenerator::constant(parsenode * node){
 }
 
 void bytecodegenerator::loadStdlib(){
-    libs a;
-    templateTable = a.get();
+    templateTable = library.get();
 }
 
 void bytecodegenerator::pushCode(int command){

@@ -17,4 +17,5 @@ private:
 public:
     libs();
     map <string, vector <int> > get();
+    void call(int n);
 };

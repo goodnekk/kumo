@@ -5,6 +5,7 @@
 #include "variable.h"
 #include "bytecodes.h"
 #include "program.h"
+#include "libs.h"
 
 using namespace std;
 
@@ -22,6 +23,8 @@ private:
 
     vector <variable> constants;
 
+    libs library;
+    
 public:
     void load(program p);
     void run();

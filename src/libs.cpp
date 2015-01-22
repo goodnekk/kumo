@@ -28,3 +28,7 @@ libs::libs(){
 map <string, vector <int> > libs::get(){
     return liblist;
 }
+
+void libs::call(int n){
+    virtuals[n]();
+}

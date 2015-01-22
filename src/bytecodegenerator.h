@@ -24,7 +24,7 @@ using namespace std;
 class bytecodegenerator{
 private:
     vector <variable> constants;
-
+    libs library;
     //vector <string> variables;
 
     map <string, vector <int> > templateTable;
