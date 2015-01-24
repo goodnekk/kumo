@@ -2,8 +2,8 @@
 
 namespace inout{
     void say(variable * s, int sp){
-        LOG("say");
         s[sp].say();
+        sp--;
     }
 
     void ask(variable * s, int sp){

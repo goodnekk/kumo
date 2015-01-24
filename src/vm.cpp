@@ -19,51 +19,75 @@ void vm::run(){
             case bytecodes::END:
                 running = false;
                 break;
+
             case bytecodes::PUSH_C:
                 codePoint++;
                 stackPoint++;
                 stack[stackPoint] = constants[code[codePoint]];
                 break;
+
             case bytecodes::POP:
                 break;
-            case bytecodes::PUSH_R:
+
+            case bytecodes::PUSH_R: //push from ram
+                codePoint++;
+                stackPoint++;
+                stack[stackPoint] = ram[code[codePoint]];
+
                 break;
-            case bytecodes::POP_R:
+
+            case bytecodes::POP_R: //pop to ram
+                codePoint++;
+                ram[code[codePoint]] = stack[stackPoint];
+                stackPoint--;
                 break;
+
             case bytecodes::ADD:
                 stackPoint--;
                 stack[stackPoint] = variable(stack[stackPoint].get_number() + stack[stackPoint+1].get_number());
                 break;
+
             case bytecodes::SUB:
                 stackPoint--;
                 stack[stackPoint] = variable(stack[stackPoint].get_number() - stack[stackPoint+1].get_number());
                 break;
+
             case bytecodes::MULT:
                 stackPoint--;
                 stack[stackPoint] = variable(stack[stackPoint].get_number() * stack[stackPoint+1].get_number());
                 break;
+
             case bytecodes::DIV:
                 stackPoint--;
                 stack[stackPoint] = variable(stack[stackPoint].get_number() / stack[stackPoint+1].get_number());
                 break;
+
             case bytecodes::ISEQ:
                 break;
+
             case bytecodes::ISHI:
                 break;
+
             case bytecodes::ISLO:
                 break;
+
             case bytecodes::CALL:
                 break;
+
             case bytecodes::RETURN:
                 break;
+
             case bytecodes::V_CALL:
                 codePoint++;
                 library.call(code[codePoint], stack, stackPoint);
                 break;
+
             case bytecodes::ISTRUE:
                 break;
+
             case bytecodes::GOTO:
                 break;
+
             default:
                 LOG_DEBUG("VM: unknown bytecode!");
         }

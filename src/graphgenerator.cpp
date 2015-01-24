@@ -20,7 +20,7 @@ int graphgenerator::analyse(parsenode * node){
             new_label("block");
             break;
         case lexemetypes::ASSIGNMENT:
-            new_label("assignment");
+            new_label("assignment: "+(node->value));
             break;
         case lexemetypes::DECLARATION:
             new_label("declaration");

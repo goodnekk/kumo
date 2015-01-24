@@ -19,12 +19,13 @@ private:
     int stackPoint;
 
     variable ram[100]; //random acces storage for variables
-    int functionPoint; //points to the current function
+
+    //int functionPoint; //points to the current function
 
     vector <variable> constants;
 
     libs library;
-    
+
 public:
     void load(program p);
     void run();

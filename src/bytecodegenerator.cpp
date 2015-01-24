@@ -17,8 +17,17 @@ void bytecodegenerator::analize(parsenode * node){
     }
 
     switch(node->type){
+        case lexemetypes::ASSIGNMENT:
+            assignment(node);
+            break;
+        case lexemetypes::VARIABLE:
+            var(node);
+            break;
         case lexemetypes::CALL:
             call(node);
+            break;
+        case lexemetypes::DECLARATION:
+            declaration(node);
             break;
         case lexemetypes::NUMBER:
             constant(node);
@@ -30,6 +39,36 @@ void bytecodegenerator::analize(parsenode * node){
             constant(node);
             break;
     }
+}
+
+void bytecodegenerator::assignment(parsenode * node){
+    //first check if exists
+    int a = -1;
+    for(int i =0; i<variables.size(); i++){
+        if(variables[i]==node->value){
+            a = i;
+        }
+    }
+    //else create new
+    if(a==-1){
+        variables.push_back(node->value);
+        a = variables.size()-1;
+    }
+
+    pushCode(bytecodes::POP_R);
+    pushCode(a);
+}
+
+
+void bytecodegenerator::var(parsenode * node){
+    for(int i =0; i<variables.size(); i++){
+        if(variables[i]==node->value){
+            pushCode(bytecodes::PUSH_R);
+            pushCode(i);
+            return;
+        }
+    }
+    LOG_ERROR("Variable "<<node->value<<" is used before declaration");
 }
 
 void bytecodegenerator::call(parsenode * node){
@@ -56,6 +95,10 @@ void bytecodegenerator::constant(parsenode * node){
     constants.push_back(variable(t, node->value));
     pushCode(constants.size()-1);
     LOG_DEBUG("Generator: Constant["<<constants.size()-1<<"] = "<<node->value);
+}
+
+void bytecodegenerator::declaration(parsenode * node){
+
 }
 
 void bytecodegenerator::loadStdlib(){

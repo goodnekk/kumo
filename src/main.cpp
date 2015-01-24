@@ -9,9 +9,9 @@
 #include <sstream>
 #include <fstream>
 
-const static string revision_name = "beta";
+const static string revision_name = "pre release";
 const static int major_revision = 0;
-const static int minor_revision = 2;
+const static int minor_revision = 3;
 
 int main(int argc, char* argv[]) {
 	LOG("hello kumo v"<< major_revision<<"."<<minor_revision<<"("<<revision_name<<")");
@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
 	vm v;
 
 	l.lex(program);
+	//g.generate(p.parse(l.getTokens()));
 	v.load(g.generate(p.parse(l.getTokens())));
 	v.run();
 

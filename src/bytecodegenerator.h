@@ -25,15 +25,20 @@ class bytecodegenerator{
 private:
     vector <variable> constants;
     libs library;
-    //vector <string> variables;
+    vector <string> variables;
 
     map <string, vector <int> > templateTable;
 
     vector <int> code;
 
     void analize(parsenode * node);
+    void assignment(parsenode * node);
+    void var(parsenode * node);
+
     void call(parsenode * node);
     void constant(parsenode * node);
+
+    void declaration(parsenode * node);
 
     void loadStdlib();
     void pushCode(int command);

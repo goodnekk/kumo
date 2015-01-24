@@ -74,8 +74,9 @@ parsenode * parser::assignment(int n){
         if(b){
             parsenode * c = expression(n+2);
             if(c){
-                parsenode * node = new parsenode(n,lexemetypes::ASSIGNMENT,1);
-                node->push(a);
+                parsenode * node = new parsenode(n,lexemetypes::ASSIGNMENT,2);
+                node->value = a->value;
+                delete a;
                 node->push(c);
                 return node;
             }
