@@ -18,7 +18,6 @@
 #include <sstream>
 
 
-
 using namespace std;
 
 class bytecodegenerator{
@@ -30,9 +29,13 @@ private:
     map <string, vector <int> > templateTable;
 
     vector <vector <int> > code;
-    int currentBlock;
+
+    vector <int> blockStack;
 
     void analize(parsenode * node);
+    void children(parsenode * node);
+
+    void block(parsenode * node);
     void assignment(parsenode * node);
     void var(parsenode * node);
 
@@ -42,6 +45,8 @@ private:
     void declaration(parsenode * node);
 
     void loadStdlib();
+
+
     void pushCode(int command);
     void pushCode(vector <int> commands);
 

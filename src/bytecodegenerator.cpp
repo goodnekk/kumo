@@ -12,28 +12,25 @@ program bytecodegenerator::generate(parsenode * root){
 }
 
 void bytecodegenerator::analize(parsenode * node){
-    if(node->type == lexemetypes::BLOCK){
-        LOG_DEBUG("Generator: new block");
-        vector<int> a; //FIXME: this can be better
-        code.push_back(a);
-        currentBlock = code.size()-1;
-    }
-
-    for(int i=0; i < node->children.size(); i++){
-        analize(node->children.at(i));
-    }
 
     switch(node->type){
+        case lexemetypes::BLOCK:
+            block(node);
+            children(node);
+            break;
         case lexemetypes::ASSIGNMENT:
+            children(node);
             assignment(node);
             break;
         case lexemetypes::VARIABLE:
             var(node);
             break;
         case lexemetypes::CALL:
+            children(node);
             call(node);
             break;
         case lexemetypes::DECLARATION:
+            children(node);
             declaration(node);
             break;
         case lexemetypes::NUMBER:
@@ -46,6 +43,19 @@ void bytecodegenerator::analize(parsenode * node){
             constant(node);
             break;
     }
+}
+
+void bytecodegenerator::children(parsenode * node){
+    for(int i=0; i < node->children.size(); i++){
+        analize(node->children.at(i));
+    }
+}
+
+void bytecodegenerator::block(parsenode * node){
+    LOG_DEBUG("Generator: new block");
+    vector<int> a; //FIXME: this can be better
+    code.push_back(a);
+    blockStack.push_back(code.size()-1);
 }
 
 void bytecodegenerator::assignment(parsenode * node){
@@ -119,8 +129,8 @@ void bytecodegenerator::declaration(parsenode * node){
     pushCode(bytecodes::RETURN);
 
     //return to the last block
-    int lastBlock = currentBlock;
-    currentBlock--;
+    int lastBlock = blockStack[blockStack.size()-1];
+    blockStack.pop_back();
     pushCode(bytecodes::PUSH_C);
     constants.push_back(variable(variabletypes::POINTER, lastBlock));
     pushCode(constants.size()-1);
@@ -134,7 +144,7 @@ void bytecodegenerator::loadStdlib(){
 
 void bytecodegenerator::pushCode(int command){
     LOG_DEBUG("Generator: "<<command);
-    code[currentBlock].push_back(command);
+    code[blockStack[blockStack.size()-1]].push_back(command);
 }
 
 void bytecodegenerator::pushCode(vector <int> commands){
