@@ -1,11 +1,22 @@
 #include "variable.h"
 variable::variable(){
-
 }
 
-variable::variable(float n){
+variable::variable(float n){ //FIXME: ADD type here
     number = n;
     type = variabletypes::NUMBER;
+}
+
+variable::variable(variabletypes t, int i){
+    type = t;
+    switch(type){
+        case variabletypes::POINTER:
+            pointer = i;
+            break;
+        default:
+            LOG_ERROR("UNKNOWN VARIABLE TYPE");
+            STOP();
+    }
 }
 
 variable::variable(variabletypes t, string s){
@@ -32,7 +43,22 @@ variabletypes variable::get_type(){
 }
 
 float variable::get_number(){
-    return number;
+    if(type==variabletypes::NUMBER){
+        return number;
+    } else {
+        LOG_ERROR("variable not of type number");
+        STOP();
+    }
+}
+
+int variable::get_pointer(){
+    if(type==variabletypes::POINTER){
+        return pointer;
+    } else {
+        LOG_ERROR("variable not of type pointer");
+        STOP();
+    }
+
 }
 
 void variable::say(){

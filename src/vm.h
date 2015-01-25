@@ -12,15 +12,20 @@ using namespace std;
 class vm {
 private:
 
-    vector <int> code;
+    vector <vector <int> > code;
     int codePoint; //points to the current operation
 
     variable stack[100];
     int stackPoint;
 
+    int callStack[100];
+    int callStackPoint;
+
+    int functionPoint; //points to the current function
+
     variable ram[100]; //random acces storage for variables
 
-    //int functionPoint; //points to the current function
+
 
     vector <variable> constants;
 

@@ -8,7 +8,7 @@ using namespace std;
 
 class program{
 public:
-    vector <int> code;
+    vector <vector <int> > code;
     vector <variable> constants;
     libs library;
 };

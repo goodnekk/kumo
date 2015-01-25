@@ -29,7 +29,8 @@ private:
 
     map <string, vector <int> > templateTable;
 
-    vector <int> code;
+    vector <vector <int> > code;
+    int currentBlock;
 
     void analize(parsenode * node);
     void assignment(parsenode * node);

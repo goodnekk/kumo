@@ -7,15 +7,17 @@ void vm::load(program p){
 
     codePoint = -1;
     stackPoint = -1;
+    callStackPoint = -1;
+    functionPoint = 0;
 }
 
 void vm::run(){
     bool running = true;
     while(running){
         codePoint++;
-        LOG_DEBUG("VM: "<<codePoint<<" "<<bytecodes::names[code[codePoint]]);
+        LOG_DEBUG("VM: "<<functionPoint<<" "<<codePoint<<" "<<bytecodes::names[code[functionPoint][codePoint]]);
 
-        switch(code[codePoint]){
+        switch(code[functionPoint][codePoint]){
             case bytecodes::END:
                 running = false;
                 break;
@@ -23,7 +25,7 @@ void vm::run(){
             case bytecodes::PUSH_C:
                 codePoint++;
                 stackPoint++;
-                stack[stackPoint] = constants[code[codePoint]];
+                stack[stackPoint] = constants[code[functionPoint][codePoint]];
                 break;
 
             case bytecodes::POP:
@@ -32,13 +34,13 @@ void vm::run(){
             case bytecodes::PUSH_R: //push from ram
                 codePoint++;
                 stackPoint++;
-                stack[stackPoint] = ram[code[codePoint]];
+                stack[stackPoint] = ram[code[functionPoint][codePoint]];
 
                 break;
 
             case bytecodes::POP_R: //pop to ram
                 codePoint++;
-                ram[code[codePoint]] = stack[stackPoint];
+                ram[code[functionPoint][codePoint]] = stack[stackPoint];
                 stackPoint--;
                 break;
 
@@ -72,14 +74,31 @@ void vm::run(){
                 break;
 
             case bytecodes::CALL:
+                codePoint++;
+                //push current position onto the callstack
+
+                callStackPoint++;
+                callStack[callStackPoint] = functionPoint;
+                callStackPoint++;
+                callStack[callStackPoint] = codePoint;
+
+                LOG_DEBUG("VM: CALL FROM: "<<functionPoint<<" "<<codePoint<<"-"<<code[functionPoint][codePoint]);
+                functionPoint = ram[code[functionPoint][codePoint]].get_pointer();
+                LOG_DEBUG("VM: CALL: "<<functionPoint);
+                codePoint = -1;
                 break;
 
             case bytecodes::RETURN:
+                LOG_DEBUG("VM: RETURN FROM: "<<functionPoint);
+                codePoint = callStack[callStackPoint];
+                callStackPoint--;
+                functionPoint = callStack[callStackPoint];
+                callStackPoint--;
                 break;
 
             case bytecodes::V_CALL:
                 codePoint++;
-                library.call(code[codePoint], stack, stackPoint);
+                library.call(code[functionPoint][codePoint], stack, stackPoint);
                 break;
 
             case bytecodes::ISTRUE:
@@ -92,9 +111,10 @@ void vm::run(){
                 LOG_DEBUG("VM: unknown bytecode!");
         }
 
-
-        if(codePoint>=code.size()){
+        /*
+        if(codePoint>=code[functionPoint].size()){
             running = false;
         }
+        */
     }
 }

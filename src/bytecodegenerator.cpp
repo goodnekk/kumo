@@ -12,6 +12,13 @@ program bytecodegenerator::generate(parsenode * root){
 }
 
 void bytecodegenerator::analize(parsenode * node){
+    if(node->type == lexemetypes::BLOCK){
+        LOG_DEBUG("Generator: new block");
+        vector<int> a; //FIXME: this can be better
+        code.push_back(a);
+        currentBlock = code.size()-1;
+    }
+
     for(int i=0; i < node->children.size(); i++){
         analize(node->children.at(i));
     }
@@ -72,11 +79,20 @@ void bytecodegenerator::var(parsenode * node){
 }
 
 void bytecodegenerator::call(parsenode * node){
-    if(templateTable.find(node->value) == templateTable.end()){
+    //find function in templates
+    if(!(templateTable.find(node->value) == templateTable.end())){
+        pushCode(templateTable[node->value]);
+        return;
+    } else { //find function in variables
+        for(int i=0; i<variables.size(); i++){
+            if(node->value == variables[i]){
+                pushCode(bytecodes::CALL);
+                pushCode(i);
+                return;
+            }
+        }
         LOG_ERROR("Unknown function "<<node->value);
         STOP();
-    } else {
-        pushCode(templateTable[node->value]);
     }
 }
 
@@ -99,15 +115,26 @@ void bytecodegenerator::constant(parsenode * node){
 
 void bytecodegenerator::declaration(parsenode * node){
 
+    //push a return function at the end to make sure
+    pushCode(bytecodes::RETURN);
+
+    //return to the last block
+    int lastBlock = currentBlock;
+    currentBlock--;
+    pushCode(bytecodes::PUSH_C);
+    constants.push_back(variable(variabletypes::POINTER, lastBlock));
+    pushCode(constants.size()-1);
+    LOG_DEBUG("Generator: Pointer["<<constants.size()-1<<"] = "<<lastBlock);
 }
 
 void bytecodegenerator::loadStdlib(){
+    library.load();
     templateTable = library.get();
 }
 
 void bytecodegenerator::pushCode(int command){
     LOG_DEBUG("Generator: "<<command);
-    code.push_back(command);
+    code[currentBlock].push_back(command);
 }
 
 void bytecodegenerator::pushCode(vector <int> commands){

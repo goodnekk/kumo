@@ -12,6 +12,10 @@ namespace inout{
 }
 
 libs::libs(){
+
+}
+
+void libs::load(){
     LOG_DEBUG("Libs: Loading std lib");
 
     liblist["+"] = {bytecodes::ADD};

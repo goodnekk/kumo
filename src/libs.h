@@ -17,6 +17,10 @@ private:
 
 public:
     libs();
+
+    void load();
+
     map <string, vector <int> > get();
     void call(int n, variable * s, int sp);
+
 };
