@@ -22,15 +22,15 @@ using namespace std;
 
 class bytecodegenerator{
 private:
+    vector <vector <int> > code;
+    vector <int> blockStack;
+
     vector <variable> constants;
-    libs library;
     vector <string> variables;
+    int scopePointer;
 
     map <string, vector <int> > templateTable;
-
-    vector <vector <int> > code;
-
-    vector <int> blockStack;
+    libs library;
 
     void analize(parsenode * node);
     void children(parsenode * node);

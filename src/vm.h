@@ -17,14 +17,14 @@ private:
 
     variable stack[100];
     int stackPoint;
+    int framePointer;
 
     int callStack[100];
     int callStackPoint;
 
     int functionPoint; //points to the current function
 
-    variable ram[100]; //random acces storage for variables
-
+    variable ram[100]; //random acces storage for global variables
 
 
     vector <variable> constants;

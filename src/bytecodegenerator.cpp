@@ -53,9 +53,10 @@ void bytecodegenerator::children(parsenode * node){
 
 void bytecodegenerator::block(parsenode * node){
     LOG_DEBUG("Generator: new block");
-    vector<int> a; //FIXME: this can be better
+    vector<int> a; //FIXME: there must be another way...
     code.push_back(a);
     blockStack.push_back(code.size()-1);
+    scopePointer = variables.size()-1;
 }
 
 void bytecodegenerator::assignment(parsenode * node){
@@ -86,6 +87,7 @@ void bytecodegenerator::var(parsenode * node){
         }
     }
     LOG_ERROR("Variable "<<node->value<<" is used before declaration");
+    STOP();
 }
 
 void bytecodegenerator::call(parsenode * node){
@@ -135,6 +137,12 @@ void bytecodegenerator::declaration(parsenode * node){
     constants.push_back(variable(variabletypes::POINTER, lastBlock));
     pushCode(constants.size()-1);
     LOG_DEBUG("Generator: Pointer["<<constants.size()-1<<"] = "<<lastBlock);
+
+    //clear scope
+    for(int i=variables.size()-1; i>=scopePointer; i--){
+        //variables[i]=="###";
+        //FIXME: This is just a hack... this makes the current scope invisible, but doesn't overwrite the ram register.
+    }
 }
 
 void bytecodegenerator::loadStdlib(){
