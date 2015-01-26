@@ -17,10 +17,10 @@ private:
 
     variable stack[100];
     int stackPoint;
-    int framePointer;
+    int framePoint;
 
-    int callStack[100];
-    int callStackPoint;
+    //int callStack[100];
+    //int callStackPoint;
 
     int functionPoint; //points to the current function
 

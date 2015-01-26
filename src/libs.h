@@ -13,7 +13,7 @@ using namespace std;
 class libs{
 private:
     map <string, vector <int> > liblist;
-    vector <void (*)(variable * s, int sp)> virtuals; //this is a list of function pointers
+    vector <void (*)(variable * s, int * sp)> virtuals; //this is a list of function pointers
 
 public:
     libs();
@@ -21,6 +21,6 @@ public:
     void load();
 
     map <string, vector <int> > get();
-    void call(int n, variable * s, int sp);
+    void call(int n, variable * s, int * sp);
 
 };

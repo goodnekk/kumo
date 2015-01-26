@@ -12,32 +12,38 @@ namespace bytecodes {
     const static int PUSH_R  =  3;
     const static int POP_R   =  4;
 
+    //push from and pop to local
+    const static int PUSH_L  =  5;
+    const static int POP_L   =  6;
+
     //arithmatic
-    const static int ADD     =  5;
-    const static int SUB     =  6;
-    const static int MULT    =  7;
-    const static int DIV     =  8;
+    const static int ADD     =  7;
+    const static int SUB     =  8;
+    const static int MULT    =  9;
+    const static int DIV     =  10;
 
     //boolean
-    const static int ISEQ    =  9;
-    const static int ISHI    =  10;
-    const static int ISLO    =  11;
+    const static int ISEQ    =  11;
+    const static int ISHI    =  12;
+    const static int ISLO    =  13;
 
     //functions
-    const static int CALL    = 12;
-    const static int RETURN  = 13;
-    const static int V_CALL  = 14;
+    const static int CALL    = 14;
+    const static int RETURN  = 15;
+    const static int V_CALL  = 16;
 
     //flow control
-    const static int ISTRUE  = 15;
-    const static int GOTO    = 16;
+    const static int ISTRUE  = 17;
+    const static int GOTO    = 18;
 
-    const static std::string names[17] = {
+    const static std::string names[19] = {
         "END",
         "PUSH_C",
         "POP",
         "PUSH_R",
         "POP_R",
+        "PUSH_L",
+        "POP_L",
         "ADD",
         "SUB",
         "MULT",
