@@ -42,6 +42,13 @@ void bytecodegenerator::analize(parsenode * node){
         case lexemetypes::BOOLEAN:
             constant(node);
             break;
+        case lexemetypes::NAMESLIST:
+            nameslist();
+            children(node);
+            break;
+        case lexemetypes::NAME:
+            name(node);
+            break;
     }
 }
 
@@ -79,6 +86,14 @@ void bytecodegenerator::assignment(parsenode * node){
 
 
 void bytecodegenerator::var(parsenode * node){
+    for(int i =0; i<arguments.size(); i++){
+        if(arguments[i]==node->value){
+            pushCode(bytecodes::PUSH_L);
+            pushCode(-3-(arguments.size()-1)+i); //skip over activation frame
+            return;
+        }
+    }
+
     for(int i =0; i<variables.size(); i++){
         if(variables[i]==node->value){
             pushCode(bytecodes::PUSH_R);
@@ -143,6 +158,14 @@ void bytecodegenerator::declaration(parsenode * node){
         //variables[i]=="###";
         //FIXME: This is just a hack... this makes the current scope invisible, but doesn't overwrite the ram register.
     }
+}
+
+void bytecodegenerator::nameslist(){
+    arguments.clear();
+}
+
+void bytecodegenerator::name(parsenode * node){
+    arguments.push_back(node->value);
 }
 
 void bytecodegenerator::loadStdlib(){

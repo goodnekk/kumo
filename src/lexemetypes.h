@@ -19,7 +19,8 @@ enum class lexemetypes {
     VARIABLE,
 
     //lists
-    ARGUMENTLIST,
+    NAMESLIST,
+    NAME,
 
     //EXPRESSIONS
     EXPRESSION

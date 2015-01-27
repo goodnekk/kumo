@@ -40,8 +40,11 @@ int graphgenerator::analyse(parsenode * node){
         case lexemetypes::VARIABLE:
             new_label("variable: "+(node->value));
             break;
-        case lexemetypes::ARGUMENTLIST:
-            new_label("arguments");
+        case lexemetypes::NAMESLIST:
+            new_label("nameslist");
+            break;
+        case lexemetypes::NAME:
+            new_label("name: "+(node->value));
             break;
         case lexemetypes::EXPRESSION:
             new_label("arithmatic:"+(node->value));

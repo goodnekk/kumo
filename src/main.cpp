@@ -25,17 +25,27 @@ int main(int argc, char* argv[]) {
 	buffer << t.rdbuf();
 	std::string program = buffer.str();
 
-	//start compilation
-	lexer l;
-	parser p;
-	//graphgenerator g;
-	bytecodegenerator g;
-	vm v;
 
-	l.lex(program);
-	//g.generate(p.parse(l.getTokens()));
-	v.load(g.generate(p.parse(l.getTokens())));
-	v.run();
+	if(argc==3 && std::string(argv[2])=="-g"){
+
+		LOG("output graph");
+		lexer l;
+		parser p;
+		graphgenerator gr;
+
+		l.lex(program);
+		gr.generate(p.parse(l.getTokens()));
+
+	} else {
+		lexer l;
+		parser p;
+		bytecodegenerator g;
+		vm v;
+
+		l.lex(program);
+		v.load(g.generate(p.parse(l.getTokens())));
+		v.run();
+	}
 
 	return 0;
 }

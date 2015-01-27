@@ -131,7 +131,7 @@ parsenode * parser::argument_list(int n){
     LOG_DEBUG("Parser: try argumentlist "<<n);
 
     bool cont = true;
-    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
+    parsenode * node = new parsenode(n,lexemetypes::NAMESLIST,0);
 
     while(cont) {
         //if we find an expression add to list
@@ -211,8 +211,8 @@ parsenode * parser::declaration(int n){
                 if(paren){length+=2;}
 
                 parsenode * node = new parsenode(n,lexemetypes::DECLARATION,length);
-                node->push(e);
                 if(b){node->push(b);}
+                node->push(e);
                 return node;
 
             } else {
@@ -229,11 +229,11 @@ parsenode * parser::names_list(int n){
     LOG_DEBUG("Parser: try names list "<<n);
 
     bool cont = true;
-    parsenode * node = new parsenode(n,lexemetypes::ARGUMENTLIST,0);
+    parsenode * node = new parsenode(n,lexemetypes::NAMESLIST,0);
 
     while(cont) {
         //if we find an expression add to list
-        parsenode * a = variable(n);
+        parsenode * a = name(n);
         if(a) {
             node->push(a);
 
@@ -337,6 +337,18 @@ parsenode * parser::variable(int n){
     }
     return NULL;
 }
+
+//variable: a  b  foo  bar  length
+parsenode * parser::name(int n){
+    LOG_DEBUG("Parser: try argument "<<n);
+    if(c_type(n,tokentypes::NAME)){
+        parsenode * node = new parsenode(n,lexemetypes::NAME,1);
+        node->value = getToken(n).tokenstring;
+        return node;
+    }
+    return NULL;
+}
+
 
 //constants
 parsenode * parser::constant(int n){

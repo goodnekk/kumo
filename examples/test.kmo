@@ -1,5 +1,5 @@
-hello = (){
-    say("marcel")
+hello = (message){
+    say(message)
 }
 
-hello()
+hello("marcel")

@@ -35,12 +35,23 @@ void vm::run(){
                 codePoint++;
                 stackPoint++;
                 stack[stackPoint] = ram[code[functionPoint][codePoint]];
-
                 break;
 
             case bytecodes::POP_R: //pop to ram
                 codePoint++;
                 ram[code[functionPoint][codePoint]] = stack[stackPoint];
+                stackPoint--;
+                break;
+
+            case bytecodes::PUSH_L:
+                codePoint++;
+                stackPoint++;
+                stack[stackPoint] = stack[framePoint + code[functionPoint][codePoint]];
+                break;
+
+            case bytecodes::POP_L:
+                codePoint++;
+                stack[framePoint + code[functionPoint][codePoint]] = stack[stackPoint];
                 stackPoint--;
                 break;
 

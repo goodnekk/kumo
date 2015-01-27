@@ -27,6 +27,9 @@ private:
 
     vector <variable> constants;
     vector <string> variables;
+
+    vector <string> arguments;
+
     int scopePointer;
 
     map <string, vector <int> > templateTable;
@@ -43,6 +46,8 @@ private:
     void constant(parsenode * node);
 
     void declaration(parsenode * node);
+    void nameslist();
+    void name(parsenode * node);
 
     void loadStdlib();
 

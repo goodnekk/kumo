@@ -40,6 +40,7 @@ class parser{
 
         //terminals
         parsenode * variable(int n);
+        parsenode * name(int n); //used in function defs
 
         parsenode * constant(int n);
             parsenode * text(int n);
