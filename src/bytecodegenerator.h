@@ -23,14 +23,18 @@ using namespace std;
 class bytecodegenerator{
 private:
     vector <vector <int> > code;
+    vector <int> localsize;
+    vector <int> argsize;
+    
+    vector <vector <string> > locals;
+
     vector <int> blockStack;
 
     vector <variable> constants;
+
+
     vector <string> variables;
-
     vector <string> arguments;
-
-    int scopePointer;
 
     map <string, vector <int> > templateTable;
     libs library;

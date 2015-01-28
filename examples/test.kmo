@@ -1,5 +1,8 @@
-hello = (message){
-    say(message)
-}
 
-hello("marcel")
+addFive = (a){
+    c=20
+    say("whaat")
+    say(a)
+    say(c)
+}
+addFive("hello")

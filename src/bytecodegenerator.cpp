@@ -62,26 +62,48 @@ void bytecodegenerator::block(parsenode * node){
     LOG_DEBUG("Generator: new block");
     vector<int> a; //FIXME: there must be another way...
     code.push_back(a);
+
+    vector<string> b;
+    locals.push_back(b);
+
+    argsize.push_back(arguments.size());
+
     blockStack.push_back(code.size()-1);
-    scopePointer = variables.size()-1;
+
 }
 
 void bytecodegenerator::assignment(parsenode * node){
-    //first check if exists
-    int a = -1;
-    for(int i =0; i<variables.size(); i++){
-        if(variables[i]==node->value){
-            a = i;
+    if(locals.size()>1){
+        int a = -1;
+        LOG_DEBUG("Assigning Local variable "<<node->value);
+        for(int i =0; i<locals[blockStack[blockStack.size()-1]].size(); i++){
+            if(locals[blockStack[blockStack.size()-1]][i]==node->value){
+                a = i;
+            }
         }
-    }
-    //else create new
-    if(a==-1){
-        variables.push_back(node->value);
-        a = variables.size()-1;
-    }
+        if(a==-1){
+            locals[blockStack[blockStack.size()-1]].push_back(node->value);
+            a = locals[blockStack[blockStack.size()-1]].size()-1;
+        }
+        pushCode(bytecodes::POP_L);
+        pushCode(a);
+    } else {
+        //first check if exists
+        int a = -1;
+        for(int i =0; i<variables.size(); i++){
+            if(variables[i]==node->value){
+                a = i;
+            }
+        }
+        //else create new
+        if(a==-1){
+            variables.push_back(node->value);
+            a = variables.size()-1;
+        }
 
-    pushCode(bytecodes::POP_R);
-    pushCode(a);
+        pushCode(bytecodes::POP_R);
+        pushCode(a);
+    }
 }
 
 
@@ -93,14 +115,24 @@ void bytecodegenerator::var(parsenode * node){
             return;
         }
     }
-
-    for(int i =0; i<variables.size(); i++){
-        if(variables[i]==node->value){
-            pushCode(bytecodes::PUSH_R);
-            pushCode(i);
-            return;
+    if(locals.size()>1){
+        for(int i =0; i<locals[blockStack[blockStack.size()-1]].size(); i++){
+            if(locals[blockStack[blockStack.size()-1]][i]==node->value){
+                pushCode(bytecodes::PUSH_L);
+                pushCode(i);
+                return;
+            }
+        }
+    } else{
+        for(int i =0; i<variables.size(); i++){
+            if(variables[i]==node->value){
+                pushCode(bytecodes::PUSH_R);
+                pushCode(i);
+                return;
+            }
         }
     }
+
     LOG_ERROR("Variable "<<node->value<<" is used before declaration");
     STOP();
 }
@@ -114,7 +146,8 @@ void bytecodegenerator::call(parsenode * node){
         for(int i=0; i<variables.size(); i++){
             if(node->value == variables[i]){
                 pushCode(bytecodes::CALL);
-                pushCode(i);
+                pushCode(i); //Function Pointer
+                pushCode(localsize[i]); //space for locals
                 return;
             }
         }
@@ -144,20 +177,23 @@ void bytecodegenerator::declaration(parsenode * node){
 
     //push a return function at the end to make sure
     pushCode(bytecodes::RETURN);
+    pushCode(argsize[blockStack[blockStack.size()-1]]); //how many arguments to pop off
 
     //return to the last block
     int lastBlock = blockStack[blockStack.size()-1];
     blockStack.pop_back();
+
+    localsize.push_back(locals[locals.size()-1].size());
+    //return to the last scope
+    locals.pop_back();
+
+
+    //push the function pointer onto the stack
     pushCode(bytecodes::PUSH_C);
     constants.push_back(variable(variabletypes::POINTER, lastBlock));
     pushCode(constants.size()-1);
-    LOG_DEBUG("Generator: Pointer["<<constants.size()-1<<"] = "<<lastBlock);
 
-    //clear scope
-    for(int i=variables.size()-1; i>=scopePointer; i--){
-        //variables[i]=="###";
-        //FIXME: This is just a hack... this makes the current scope invisible, but doesn't overwrite the ram register.
-    }
+    LOG_DEBUG("Generator: Pointer["<<constants.size()-1<<"] = "<<lastBlock);
 }
 
 void bytecodegenerator::nameslist(){

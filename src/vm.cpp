@@ -85,34 +85,45 @@ void vm::run(){
                 break;
 
             case bytecodes::CALL:
-                codePoint++;
                 //push current position onto the callstack
                 stackPoint++;
                 stack[stackPoint] = variable(variabletypes::POINTER,functionPoint);
 
                 stackPoint++;
-                stack[stackPoint] = variable(variabletypes::POINTER,codePoint);
+                stack[stackPoint] = variable(variabletypes::POINTER,codePoint+2);
 
                 stackPoint++;
                 stack[stackPoint] = variable(variabletypes::POINTER,framePoint);
 
                 framePoint = stackPoint;
 
-                functionPoint = ram[code[functionPoint][codePoint]].get_pointer();
+                codePoint++;
+                codePoint++;
+                LOG_DEBUG("VM: Locals: "<<code[functionPoint][codePoint]);
+                stackPoint += code[functionPoint][codePoint];
+                functionPoint = ram[code[functionPoint][codePoint-1]].get_pointer();
+
                 codePoint = -1;
                 //make space for locals
                 break;
 
             case bytecodes::RETURN:
                 LOG_DEBUG("VM: RETURN FROM: "<<functionPoint);
-                framePoint = stack[stackPoint].get_pointer();
-                stackPoint--;
+                LOG_DEBUG("VM: stack: "<<stackPoint);
+                //LOG_DEBUG("VM: frame: "<<framePoint);
 
-                codePoint = stack[stackPoint].get_pointer();
-                stackPoint--;
+                LOG_DEBUG("VM: stack: "<<stackPoint);
+                stackPoint = framePoint;
 
-                functionPoint = stack[stackPoint].get_pointer();
-                stackPoint--;
+                //pop off arguments
+                codePoint++;
+                stackPoint -= code[functionPoint][codePoint]+3;
+                LOG_DEBUG("VM: stack: "<<stackPoint);
+                //return frame
+                functionPoint = stack[framePoint-2].get_pointer();
+                codePoint = stack[framePoint-1].get_pointer();
+                framePoint = stack[framePoint].get_pointer();
+
                 break;
 
             case bytecodes::V_CALL:
@@ -127,14 +138,9 @@ void vm::run(){
                 break;
 
             default:
-                LOG_DEBUG("VM: unknown bytecode!");
+                LOG_ERROR("VM: unknown bytecode!");
         }
 
         LOG_DEBUG("VM: Stack: "<<stackPoint);
-        /*
-        if(codePoint>=code[functionPoint].size()){
-            running = false;
-        }
-        */
     }
 }

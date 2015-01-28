@@ -19,9 +19,6 @@ private:
     int stackPoint;
     int framePoint;
 
-    //int callStack[100];
-    //int callStackPoint;
-
     int functionPoint; //points to the current function
 
     variable ram[100]; //random acces storage for global variables
